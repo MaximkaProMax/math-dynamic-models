@@ -1,0 +1,2979 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Градиент функции нескольких переменных и градиентный спуск | РТУ МИРЭА</title>
+  <style>
+
+:root {
+  --mirea-blue: #355ca8;
+  --mirea-cyan: #5fc1cf;
+  --mirea-light: #a7d9de;
+  --mirea-gray: #e6e6e6;
+  --mirea-mid: #3772b3;
+  --ink: #3a4141;
+  --muted: #6e7b80;
+  --paper: #ffffff;
+  --soft: #f5f8fb;
+  --soft-blue: #eaf1fb;
+  --line: #d7e0ea;
+  --success: #1c8f72;
+  --warning: #cc534e;
+  --danger: #cc534e;
+  --shadow: 0 18px 46px rgba(38, 70, 121, 0.12);
+  --radius: 8px;
+  --radius-lg: 14px;
+  --container: 1180px;
+  --font: "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  color: var(--ink);
+  background:
+    linear-gradient(90deg, rgba(53, 92, 168, 0.05) 0 1px, transparent 1px 100%),
+    linear-gradient(180deg, rgba(53, 92, 168, 0.05) 0 1px, transparent 1px 100%),
+    linear-gradient(180deg, #ffffff 0%, #f2f7fb 48%, #ffffff 100%);
+  background-size: 32px 32px, 32px 32px, auto;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+.container {
+  width: min(var(--container), calc(100% - 32px));
+  margin: 0 auto;
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(215, 224, 234, 0.85);
+}
+
+.navbar {
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 10px 0;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  min-width: 178px;
+  flex: 0 1 260px;
+}
+
+
+.brand-meta {
+  display: grid;
+  gap: 2px;
+  line-height: 1.15;
+}
+
+.brand-meta strong {
+  color: var(--mirea-blue);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.brand-meta span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 1 1 420px;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.nav-links a {
+  padding: 9px 12px;
+  border-radius: var(--radius);
+  color: var(--muted);
+  font-size: 14px;
+  transition: 0.2s ease;
+}
+
+.nav-links a:hover,
+.nav-links a:focus-visible {
+  color: var(--mirea-blue);
+  background: var(--soft-blue);
+  outline: none;
+}
+
+.hero-band {
+  padding: 34px 0 44px;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: 1.03fr 0.97fr;
+  gap: 26px;
+  align-items: stretch;
+  min-height: 460px;
+  padding: 32px;
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(circle at 85% 12%, rgba(255, 255, 255, 0.22), transparent 34%),
+    linear-gradient(135deg, #355ca8 0%, #3772b3 47%, #5fc1cf 100%);
+  box-shadow: var(--shadow);
+  color: #ffffff;
+  overflow: hidden;
+}
+
+.hero h1 {
+  margin: 18px 0 18px;
+  max-width: 780px;
+  font-size: clamp(34px, 5vw, 58px);
+  line-height: 1.02;
+  letter-spacing: 0;
+}
+
+.hero p {
+  max-width: 760px;
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.58;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.department-chip {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  min-height: 34px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 10px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #ffffff;
+  color: var(--mirea-blue);
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+  box-shadow: none;
+}
+
+.button:hover,
+.button:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(38, 70, 121, 0.13);
+  outline: none;
+}
+
+.button.primary {
+  background: var(--mirea-blue);
+  border-color: var(--mirea-blue);
+  color: #ffffff;
+}
+
+.button.cyan {
+  background: var(--mirea-cyan);
+  border-color: var(--mirea-cyan);
+  color: #113f4a;
+}
+
+.button.light {
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--mirea-blue);
+}
+
+.button.small {
+  min-height: 36px;
+  padding: 8px 12px;
+  font-size: 13px;
+}
+
+.hero-tool {
+  display: flex;
+  flex-direction: column;
+  min-height: 396px;
+  padding: 18px;
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.96);
+  color: var(--ink);
+  box-shadow: 0 20px 44px rgba(29, 49, 89, 0.2);
+}
+
+.tool-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.tool-head strong {
+  display: block;
+  color: var(--mirea-blue);
+}
+
+.tool-head span {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.hero-canvas-wrap {
+  flex: 1;
+  min-height: 220px;
+  margin: 14px 0;
+  border-radius: var(--radius);
+  background: #ffffff;
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+
+.hero-canvas-wrap canvas,
+.canvas-shell canvas,
+.mini-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.metric-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.metric {
+  padding: 12px;
+  border-radius: var(--radius);
+  background: var(--soft-blue);
+  border: 1px solid var(--line);
+}
+
+.metric strong {
+  display: block;
+  color: var(--mirea-blue);
+  font-size: 17px;
+}
+
+.metric span {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.section {
+  padding: 54px 0;
+}
+
+.section.soft {
+  background: rgba(245, 248, 251, 0.78);
+  border-top: 1px solid rgba(215, 224, 234, 0.65);
+  border-bottom: 1px solid rgba(215, 224, 234, 0.65);
+}
+
+.section-head {
+  max-width: 850px;
+  margin-bottom: 24px;
+}
+
+.eyebrow {
+  display: inline-flex;
+  margin-bottom: 9px;
+  color: var(--mirea-mid);
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+}
+
+.section-head h2 {
+  margin: 0 0 12px;
+  font-size: clamp(28px, 4vw, 42px);
+  line-height: 1.12;
+  color: var(--ink);
+}
+
+.section-head p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.58;
+}
+
+.concept-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.concept-card,
+.quiz-panel,
+.visual-panel,
+.definition,
+.table-card,
+.module-card,
+.route-card {
+  border-radius: var(--radius-lg);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+
+.concept-card {
+  padding: 20px;
+}
+
+.concept-card h3 {
+  margin: 0 0 10px;
+  color: var(--mirea-blue);
+  font-size: 20px;
+}
+
+.concept-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.visual-layout {
+  display: grid;
+  grid-template-columns: 0.78fr 1.22fr;
+  gap: 22px;
+  align-items: start;
+}
+
+.visual-copy {
+  display: grid;
+  gap: 14px;
+}
+
+.definition {
+  padding: 18px;
+}
+
+.definition h3,
+.definition h4 {
+  margin: 0 0 9px;
+  color: var(--mirea-blue);
+}
+
+.definition p,
+.definition li {
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.definition ul,
+.definition ol {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.formula {
+  margin: 12px 0 0;
+  padding: 13px 14px;
+  border-radius: var(--radius);
+  background: var(--soft-blue);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  overflow-x: auto;
+  font-weight: 700;
+}
+
+.visual-panel {
+  padding: 18px;
+}
+
+.panel-title {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.panel-title h3 {
+  margin: 0;
+  color: var(--mirea-blue);
+}
+
+.panel-title span {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.control {
+  display: grid;
+  gap: 6px;
+}
+
+.control.full {
+  grid-column: 1 / -1;
+}
+
+.control label {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.control input,
+.control select {
+  width: 100%;
+  min-height: 40px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 8px 10px;
+  color: var(--ink);
+  background: #ffffff;
+}
+
+.control input[type="range"] {
+  padding: 0;
+}
+
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.matrix-editor,
+.coefficient-grid,
+.vector-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.matrix-editor {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.coefficient-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.vector-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.mini-label {
+  color: var(--mirea-blue);
+  font-weight: 800;
+  align-self: center;
+}
+
+.canvas-shell {
+  height: 420px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.graph-canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.mini-canvas-shell {
+  height: 220px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.status {
+  min-height: 76px;
+  padding: 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: var(--soft);
+}
+
+.status strong {
+  display: block;
+  color: var(--mirea-blue);
+  margin-bottom: 5px;
+}
+
+.status span {
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.status.success {
+  background: rgba(28, 143, 114, 0.08);
+  border-color: rgba(28, 143, 114, 0.22);
+}
+
+.status.success strong {
+  color: var(--success);
+}
+
+.status.warning {
+  background: rgba(204, 83, 78, 0.08);
+  border-color: rgba(204, 83, 78, 0.22);
+}
+
+.status.warning strong {
+  color: var(--warning);
+}
+
+.steps-list {
+  display: grid;
+  gap: 10px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.steps-list li {
+  padding: 13px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #ffffff;
+  color: var(--ink);
+  line-height: 1.45;
+}
+
+.table-card {
+  padding: 18px;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;
+}
+
+th,
+td {
+  padding: 12px 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+
+th {
+  color: var(--mirea-blue);
+  background: var(--soft-blue);
+}
+
+td {
+  color: var(--muted);
+}
+
+.quiz-layout {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 18px;
+  align-items: start;
+}
+
+.quiz-panel {
+  padding: 20px;
+}
+
+.quiz-topline {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--muted);
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
+.answer-grid {
+  display: grid;
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.answer {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  text-align: left;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: #ffffff;
+  color: var(--ink);
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.answer:hover,
+.answer.selected {
+  background: var(--soft-blue);
+  border-color: var(--mirea-cyan);
+}
+
+.answer.correct {
+  background: rgba(28, 143, 114, 0.12);
+  border-color: var(--success);
+}
+
+.answer.wrong {
+  background: rgba(204, 83, 78, 0.12);
+  border-color: var(--warning);
+}
+
+.quiz-result {
+  min-height: 48px;
+  padding: 12px;
+  border-radius: var(--radius);
+  background: var(--soft);
+  border: 1px solid var(--line);
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 12px 0;
+}
+
+.tag {
+  display: inline-flex;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: var(--soft-blue);
+  color: var(--mirea-blue);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.footer {
+  padding: 30px 0;
+  background: #223a68;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.footer strong {
+  color: #ffffff;
+}
+
+.catalog-controls {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 0.8fr auto;
+  gap: 12px;
+  align-items: end;
+  margin-bottom: 18px;
+}
+
+.module-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.module-card {
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.module-card:hover,
+.module-card:focus-within {
+  transform: translateY(-3px);
+  box-shadow: 0 24px 52px rgba(38, 70, 121, 0.16);
+}
+
+.module-card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.module-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius);
+  background: var(--mirea-blue);
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.module-meta {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.module-card h3 {
+  margin: 0;
+  color: var(--mirea-blue);
+  font-size: 20px;
+  line-height: 1.2;
+}
+
+.module-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.feature-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 7px 12px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.feature-list span::before {
+  content: "✓ ";
+  color: var(--success);
+  font-weight: 800;
+}
+
+.timeline {
+  display: grid;
+  gap: 14px;
+}
+
+.route-card {
+  display: grid;
+  grid-template-columns: 190px 1fr auto;
+  gap: 16px;
+  align-items: center;
+  padding: 18px;
+}
+
+.route-card strong {
+  color: var(--mirea-blue);
+}
+
+.route-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.site-header,
+.hero,
+.hero-tool,
+.section-head,
+.concept-card,
+.visual-copy .definition,
+.visual-panel,
+.canvas-shell,
+.status,
+.table-card,
+.quiz-panel,
+.module-card,
+.route-card {
+  animation: fadeSlideIn 220ms ease both;
+}
+
+.hero-tool,
+.visual-panel,
+.quiz-panel {
+  animation-delay: 40ms;
+}
+
+.concept-card:nth-child(2),
+.module-card:nth-child(2),
+.route-card:nth-child(2),
+.status:nth-child(2) {
+  animation-delay: 35ms;
+}
+
+.concept-card:nth-child(3),
+.module-card:nth-child(3),
+.route-card:nth-child(3),
+.status:nth-child(3) {
+  animation-delay: 70ms;
+}
+
+.concept-card:nth-child(n+4),
+.module-card:nth-child(n+4),
+.route-card:nth-child(n+4) {
+  animation-delay: 95ms;
+}
+
+.topic-visual {
+  width: 112px;
+  height: 64px;
+  flex: 0 0 auto;
+  animation: fadeSlideIn 240ms ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+
+:root[data-theme="dark"] {
+  --ink: #eef6ff;
+  --muted: #a8bac8;
+  --paper: #101a2b;
+  --soft: #0b1422;
+  --soft-blue: rgba(95, 193, 207, 0.12);
+  --line: rgba(167, 217, 222, 0.18);
+  --shadow: 0 18px 46px rgba(0, 0, 0, 0.38);
+}
+
+:root[data-theme="dark"] body {
+  background:
+    linear-gradient(90deg, rgba(95, 193, 207, 0.06) 0 1px, transparent 1px 100%),
+    linear-gradient(180deg, rgba(95, 193, 207, 0.05) 0 1px, transparent 1px 100%),
+    radial-gradient(circle at 20% 0%, rgba(53, 92, 168, 0.36), transparent 34%),
+    linear-gradient(180deg, #08111f 0%, #0d1728 52%, #09111d 100%);
+  background-size: 32px 32px, 32px 32px, auto, auto;
+}
+
+body,
+.site-header,
+.hero-tool,
+.concept-card,
+.visual-panel,
+.quiz-panel,
+.status,
+.definition,
+.table-card,
+.footer,
+input,
+select,
+button,
+.button,
+.back-link,
+.theme-toggle,
+.canvas-shell,
+.hero-canvas-wrap,
+.mini-canvas-shell,
+.metric,
+.steps-list li,
+.module-card,
+.route-card {
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease,
+    filter 180ms ease;
+}
+
+:root[data-theme="dark"] .site-header {
+  background: rgba(8, 17, 31, 0.9);
+  border-bottom-color: rgba(167, 217, 222, 0.16);
+}
+
+:root[data-theme="dark"] .brand-meta strong,
+:root[data-theme="dark"] .nav-links a:hover,
+:root[data-theme="dark"] .nav-links a:focus-visible,
+:root[data-theme="dark"] .concept-card h3,
+:root[data-theme="dark"] .definition h3,
+:root[data-theme="dark"] .definition h4,
+:root[data-theme="dark"] .panel-title h3,
+:root[data-theme="dark"] .module-card h3,
+:root[data-theme="dark"] .metric strong,
+:root[data-theme="dark"] .status strong,
+:root[data-theme="dark"] .mini-label {
+  color: var(--mirea-light);
+}
+
+:root[data-theme="dark"] .hero {
+  background:
+    radial-gradient(circle at 84% 10%, rgba(95, 193, 207, 0.24), transparent 34%),
+    linear-gradient(135deg, #1c3162 0%, #264f8e 48%, #2a8da4 100%);
+}
+
+:root[data-theme="dark"] .hero-tool,
+:root[data-theme="dark"] .concept-card,
+:root[data-theme="dark"] .visual-panel,
+:root[data-theme="dark"] .quiz-panel,
+:root[data-theme="dark"] .definition,
+:root[data-theme="dark"] .table-card,
+:root[data-theme="dark"] .module-card,
+:root[data-theme="dark"] .route-card {
+  background: rgba(16, 26, 43, 0.96);
+  border-color: rgba(167, 217, 222, 0.18);
+}
+
+:root[data-theme="dark"] .section.soft {
+  background: rgba(11, 20, 34, 0.78);
+  border-color: rgba(167, 217, 222, 0.12);
+}
+
+:root[data-theme="dark"] .hero-canvas-wrap,
+:root[data-theme="dark"] .canvas-shell,
+:root[data-theme="dark"] .mini-canvas-shell {
+  background: #0b1422;
+  border-color: rgba(167, 217, 222, 0.2);
+}
+
+:root[data-theme="dark"] .metric,
+:root[data-theme="dark"] .status,
+:root[data-theme="dark"] .steps-list li,
+:root[data-theme="dark"] .tag,
+:root[data-theme="dark"] .formula {
+  background: rgba(95, 193, 207, 0.1);
+  border-color: rgba(167, 217, 222, 0.17);
+}
+
+:root[data-theme="dark"] .status.success {
+  background: rgba(28, 143, 114, 0.16);
+  border-color: rgba(28, 143, 114, 0.34);
+}
+
+:root[data-theme="dark"] .status.warning,
+:root[data-theme="dark"] .quiz-result.bad {
+  background: rgba(204, 83, 78, 0.16);
+  border-color: rgba(204, 83, 78, 0.34);
+}
+
+:root[data-theme="dark"] input,
+:root[data-theme="dark"] select {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(167, 217, 222, 0.22);
+  color: var(--ink);
+}
+
+:root[data-theme="dark"] input::placeholder {
+  color: rgba(168, 186, 200, 0.72);
+}
+
+:root[data-theme="dark"] th {
+  background: rgba(95, 193, 207, 0.12);
+}
+
+:root[data-theme="dark"] td,
+:root[data-theme="dark"] th {
+  border-color: rgba(167, 217, 222, 0.14);
+}
+
+:root[data-theme="dark"] .button {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(167, 217, 222, 0.22);
+  color: var(--mirea-light);
+}
+
+:root[data-theme="dark"] .button.primary {
+  background: #355ca8;
+  border-color: #4a75c3;
+  color: #ffffff;
+}
+
+:root[data-theme="dark"] .button.cyan {
+  background: #5fc1cf;
+  border-color: #5fc1cf;
+  color: #07151c;
+}
+
+:root[data-theme="dark"] .button.light {
+  background: rgba(255, 255, 255, 0.13);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.theme-toggle:hover,
+.theme-toggle:focus-visible {
+  background: var(--soft-blue);
+  color: var(--mirea-blue);
+  outline: none;
+}
+
+.theme-toggle-icon {
+  color: var(--mirea-cyan);
+  font-size: 16px;
+  line-height: 1;
+}
+
+:root[data-theme="dark"] .theme-toggle {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(167, 217, 222, 0.22);
+  color: var(--ink);
+}
+
+:root[data-theme="dark"] .theme-toggle:hover,
+:root[data-theme="dark"] .theme-toggle:focus-visible {
+  color: var(--mirea-light);
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--mirea-blue);
+  font-size: 0.92rem;
+  font-weight: 900;
+  transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease;
+}
+
+.back-link:hover,
+.back-link:focus-visible {
+  background: var(--soft-blue);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(38, 70, 121, 0.14);
+  outline: none;
+}
+
+:root[data-theme="dark"] .back-link {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--mirea-light);
+  border-color: rgba(167, 217, 222, 0.2);
+}
+
+.button.route,
+.route-button {
+  border: 0;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--mirea-blue), var(--mirea-cyan));
+  box-shadow: 0 16px 34px rgba(53, 92, 168, 0.28);
+}
+
+.button.route:hover,
+.button.route:focus-visible,
+.route-button:hover,
+.route-button:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 22px 46px rgba(53, 92, 168, 0.36);
+  filter: saturate(1.08);
+  outline: 2px solid rgba(255, 255, 255, 0.55);
+  outline-offset: 2px;
+}
+
+.button.route:active,
+.route-button:active {
+  transform: translateY(0);
+  box-shadow: 0 10px 22px rgba(53, 92, 168, 0.24);
+}
+
+.service-map-wrap {
+  min-height: 320px;
+}
+
+.footer {
+  padding: 46px 0 26px;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(95, 193, 207, 0.22), transparent 32%),
+    linear-gradient(135deg, #1f2d44 0%, #263a5f 52%, #234b68 100%);
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.35fr 0.8fr 0.8fr;
+  gap: 28px;
+}
+
+.footer-brand {
+  display: grid;
+  gap: 8px;
+}
+
+.footer-brand strong {
+  color: #ffffff;
+  font-size: 22px;
+}
+
+.footer-brand span,
+.footer-column strong {
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.footer-brand p {
+  max-width: 560px;
+  margin: 4px 0 0;
+  color: rgba(255, 255, 255, 0.74);
+  line-height: 1.55;
+}
+
+.footer-column {
+  display: grid;
+  align-content: start;
+  gap: 9px;
+}
+
+.footer a,
+.footer-column span {
+  color: rgba(255, 255, 255, 0.74);
+}
+
+.footer a:hover,
+.footer a:focus-visible {
+  color: #ffffff;
+  outline: none;
+}
+
+.footer-bottom {
+  margin-top: 26px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+
+/* mirea-polish-v3 */
+:root {
+  --graph-bg: #ffffff;
+  --graph-soft: #f7fbfd;
+  --graph-grid: rgba(53, 92, 168, 0.13);
+  --graph-axis: rgba(58, 65, 65, 0.42);
+  --graph-text: #6e7b80;
+}
+
+:root[data-theme="dark"] {
+  --graph-bg: #0b1422;
+  --graph-soft: #101a2b;
+  --graph-grid: rgba(167, 217, 222, 0.12);
+  --graph-axis: rgba(238, 246, 255, 0.34);
+  --graph-text: #a8bac8;
+}
+
+.canvas-shell,
+.hero-canvas-wrap,
+.mini-canvas-shell {
+  background: var(--graph-bg);
+}
+
+
+.back-row {
+  padding: 18px 0 0;
+}
+
+.back-link {
+  justify-content: center;
+  min-height: 38px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  box-shadow: 0 8px 22px rgba(38, 70, 121, 0.08);
+  transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease, color 160ms ease;
+}
+
+.back-link:hover,
+.back-link:focus-visible {
+  box-shadow: 0 12px 30px rgba(38, 70, 121, 0.14);
+}
+
+:root[data-theme="dark"] .back-link {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--mirea-light);
+  border-color: rgba(167, 217, 222, 0.22);
+}
+
+.theme-toggle {
+  width: 132px;
+  min-width: 132px;
+  height: 38px;
+  padding: 0 10px;
+  justify-content: space-between;
+  gap: 8px;
+  font-weight: 900;
+  font-size: 0.86rem;
+}
+
+.theme-toggle-track {
+  position: relative;
+  width: 38px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--soft-blue);
+  flex: 0 0 38px;
+  transition: background-color 180ms ease;
+}
+
+.theme-toggle-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--mirea-blue);
+  transition: transform 220ms cubic-bezier(.2,.8,.2,1), background-color 180ms ease;
+}
+
+:root[data-theme="dark"] .theme-toggle-track {
+  background: rgba(95, 193, 207, 0.2);
+}
+
+:root[data-theme="dark"] .theme-toggle-thumb {
+  transform: translateX(18px);
+  background: var(--mirea-cyan);
+}
+
+.theme-toggle:hover,
+.theme-toggle:focus-visible {
+  box-shadow: 0 10px 24px rgba(38, 70, 121, 0.12);
+}
+
+:root[data-theme="dark"] input,
+:root[data-theme="dark"] select,
+:root[data-theme="dark"] textarea {
+  background: rgba(255, 255, 255, 0.06);
+  color: #eef6ff;
+  border-color: rgba(167, 217, 222, 0.24);
+}
+
+:root[data-theme="dark"] input:focus,
+:root[data-theme="dark"] select:focus,
+:root[data-theme="dark"] textarea:focus {
+  outline: 2px solid rgba(95, 193, 207, 0.35);
+  border-color: rgba(95, 193, 207, 0.68);
+}
+
+:root[data-theme="dark"] input::placeholder,
+:root[data-theme="dark"] textarea::placeholder {
+  color: rgba(238, 246, 255, 0.46);
+}
+
+:root[data-theme="dark"] select option {
+  background: #101a2b;
+  color: #eef6ff;
+}
+
+:root[data-theme="dark"] .answer {
+  background: rgba(255, 255, 255, 0.055);
+  color: #eef6ff;
+  border-color: rgba(167, 217, 222, 0.22);
+}
+
+:root[data-theme="dark"] .answer:hover,
+:root[data-theme="dark"] .answer.selected {
+  background: rgba(95, 193, 207, 0.12);
+  border-color: rgba(95, 193, 207, 0.48);
+}
+
+:root[data-theme="dark"] .answer.correct {
+  color: #bff5df;
+  background: rgba(28, 143, 114, 0.16);
+  border-color: rgba(28, 143, 114, 0.48);
+}
+
+:root[data-theme="dark"] .answer.wrong {
+  color: #ffd1cf;
+  background: rgba(204, 83, 78, 0.16);
+  border-color: rgba(204, 83, 78, 0.48);
+}
+
+:root[data-theme="dark"] .answer input {
+  accent-color: var(--mirea-cyan);
+}
+
+:root[data-theme="dark"] .quiz-result {
+  background: rgba(255, 255, 255, 0.045);
+  color: #c9d8e6;
+  border-color: rgba(167, 217, 222, 0.2);
+}
+
+:root[data-theme="dark"] .quiz-result.success {
+  color: #bff5df;
+  background: rgba(28, 143, 114, 0.16);
+  border-color: rgba(28, 143, 114, 0.35);
+}
+
+:root[data-theme="dark"] .quiz-result.warning,
+:root[data-theme="dark"] .quiz-result.bad {
+  color: #ffd1cf;
+  background: rgba(204, 83, 78, 0.16);
+  border-color: rgba(204, 83, 78, 0.35);
+}
+
+.topic-visual {
+  border-radius: 10px;
+}
+
+.topic-visual * {
+  transition: fill 180ms ease, stroke 180ms ease;
+}
+
+.footer {
+  padding: 48px 0 26px;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(95, 193, 207, 0.35), transparent 32%),
+    linear-gradient(135deg, #253f75 0%, #355ca8 48%, #3772b3 72%, #5fc1cf 140%);
+  color: rgba(255, 255, 255, 0.86);
+}
+
+:root[data-theme="dark"] .footer {
+  background:
+    radial-gradient(circle at 20% 0%, rgba(95, 193, 207, 0.26), transparent 34%),
+    linear-gradient(135deg, #08111f 0%, #12284b 42%, #355ca8 95%);
+}
+
+.footer a {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.footer a:hover,
+.footer a:focus-visible {
+  color: #ffffff;
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.guide-shell {
+  display: grid;
+  grid-template-columns: minmax(230px, 0.76fr) 1.24fr;
+  gap: 18px;
+  align-items: stretch;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line);
+  background: var(--paper);
+  box-shadow: var(--shadow);
+  padding: 18px;
+}
+
+.guide-tabs {
+  display: grid;
+  gap: 10px;
+}
+
+.guide-step {
+  display: grid;
+  grid-template-columns: 38px 1fr;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  min-height: 62px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--soft);
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+}
+
+.guide-step:hover,
+.guide-step:focus-visible {
+  border-color: rgba(95, 193, 207, 0.56);
+  background: var(--soft-blue);
+  outline: none;
+}
+
+.guide-step.active {
+  background: linear-gradient(135deg, rgba(53, 92, 168, 0.14), rgba(95, 193, 207, 0.16));
+  border-color: rgba(95, 193, 207, 0.72);
+  box-shadow: 0 12px 26px rgba(38, 70, 121, 0.12);
+}
+
+.guide-step strong {
+  display: block;
+  color: var(--mirea-blue);
+}
+
+.guide-step span {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.guide-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: var(--soft-blue);
+  border: 1px solid var(--line);
+}
+
+.guide-icon svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: var(--mirea-blue);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.guide-detail {
+  min-height: 278px;
+  display: grid;
+  align-content: center;
+  gap: 14px;
+  padding: 24px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background:
+    radial-gradient(circle at 90% 12%, rgba(95, 193, 207, 0.16), transparent 30%),
+    var(--soft);
+}
+
+.guide-detail.is-changing {
+  animation: fadeSlideIn 220ms ease both;
+}
+
+.guide-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.guide-dots {
+  display: inline-flex;
+  gap: 6px;
+}
+
+.guide-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--line);
+}
+
+.guide-dot.active {
+  width: 22px;
+  background: var(--mirea-cyan);
+}
+
+.guide-detail h3 {
+  margin: 0;
+  color: var(--mirea-blue);
+  font-size: clamp(24px, 3vw, 32px);
+}
+
+.guide-detail p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.62;
+  font-size: 16px;
+}
+
+.guide-detail .button {
+  width: fit-content;
+}
+
+:root[data-theme="dark"] .guide-shell,
+:root[data-theme="dark"] .guide-detail {
+  background: rgba(16, 26, 43, 0.96);
+  border-color: rgba(167, 217, 222, 0.18);
+}
+
+:root[data-theme="dark"] .guide-step {
+  background: rgba(255, 255, 255, 0.045);
+  color: #eef6ff;
+  border-color: rgba(167, 217, 222, 0.2);
+}
+
+:root[data-theme="dark"] .guide-step:hover,
+:root[data-theme="dark"] .guide-step:focus-visible,
+:root[data-theme="dark"] .guide-step.active {
+  background: rgba(95, 193, 207, 0.12);
+  border-color: rgba(95, 193, 207, 0.5);
+}
+
+:root[data-theme="dark"] .guide-step strong,
+:root[data-theme="dark"] .guide-detail h3,
+:root[data-theme="dark"] .guide-icon svg {
+  color: var(--mirea-light);
+  stroke: var(--mirea-cyan);
+}
+
+:root[data-theme="dark"] .guide-icon {
+  background: rgba(95, 193, 207, 0.12);
+  border-color: rgba(167, 217, 222, 0.2);
+}
+
+@media (max-width: 780px) {
+  .guide-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .guide-detail {
+    min-height: 220px;
+  }
+}
+
+@media (max-width: 980px) {
+  .nav-actions {
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .service-map-wrap {
+    min-height: 300px;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 980px) {
+  .navbar,
+  .hero,
+  .visual-layout,
+  .quiz-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .navbar {
+    align-items: flex-start;
+  }
+
+  .concept-grid,
+  .module-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .catalog-controls {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .route-card {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .container {
+    width: min(var(--container), calc(100% - 22px));
+  }
+
+  .hero {
+    padding: 22px;
+  }
+
+  .hero h1 {
+    font-size: 34px;
+  }
+
+  .concept-grid,
+  .controls,
+  .metric-row,
+  .status-grid,
+  .module-grid,
+  .catalog-controls,
+  .feature-list {
+    grid-template-columns: 1fr;
+  }
+
+  .canvas-shell {
+    height: 320px;
+  }
+
+  .hero-tool {
+    min-height: 340px;
+  }
+
+  .hero-canvas-wrap {
+    min-height: 190px;
+  }
+}
+
+/* UX navigation additions */
+.nav-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper);
+  color: var(--mirea-blue);
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.nav-toggle:hover,
+.nav-toggle:focus-visible {
+  background: var(--soft-blue);
+  border-color: rgba(95, 193, 207, 0.56);
+  outline: none;
+}
+
+.nav-toggle-bar,
+.nav-toggle-bar::before,
+.nav-toggle-bar::after {
+  display: block;
+  width: 18px;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+  transition: transform 0.2s ease, opacity 0.2s ease, background 0.2s ease;
+}
+
+.nav-toggle-bar {
+  position: relative;
+}
+
+.nav-toggle-bar::before,
+.nav-toggle-bar::after {
+  content: "";
+  position: absolute;
+  left: 0;
+}
+
+.nav-toggle-bar::before {
+  transform: translateY(-6px);
+}
+
+.nav-toggle-bar::after {
+  transform: translateY(6px);
+}
+
+.site-header.nav-open .nav-toggle-bar {
+  background: transparent;
+}
+
+.site-header.nav-open .nav-toggle-bar::before {
+  transform: rotate(45deg);
+}
+
+.site-header.nav-open .nav-toggle-bar::after {
+  transform: rotate(-45deg);
+}
+
+.topic-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.topic-position {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--soft-blue);
+  color: var(--mirea-blue);
+  font-weight: 800;
+}
+
+.route-card-body {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.route-module-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.route-module-list a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--soft-blue);
+  color: var(--mirea-blue);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.route-module-list a:hover,
+.route-module-list a:focus-visible {
+  border-color: rgba(95, 193, 207, 0.66);
+  background: rgba(95, 193, 207, 0.16);
+  outline: none;
+}
+
+@media (max-width: 860px) {
+  .navbar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px 10px;
+    min-height: 0;
+  }
+
+  .brand {
+    min-width: 0;
+    flex: initial;
+  }
+
+  .brand-meta {
+    min-width: 0;
+  }
+
+  .brand-meta strong {
+    font-size: 18px;
+  }
+
+  .brand-meta span {
+    font-size: 12px;
+    overflow-wrap: anywhere;
+  }
+
+  .nav-toggle {
+    display: inline-flex;
+    justify-self: end;
+  }
+
+  .theme-toggle {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: start;
+    min-height: 40px;
+  }
+
+  .nav-links {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    display: grid;
+    width: 100%;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    flex: none;
+    justify-content: stretch;
+    gap: 4px;
+    padding: 0;
+    border-top: 1px solid transparent;
+    transition: max-height 0.24s ease, opacity 0.18s ease, padding 0.18s ease, border-color 0.18s ease;
+  }
+
+  .site-header.nav-open .nav-links {
+    max-height: 420px;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    padding: 8px 0 4px;
+    border-top-color: var(--line);
+  }
+
+  .nav-links a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 10px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    width: min(var(--container), calc(100% - 20px));
+  }
+
+  .topic-nav {
+    gap: 8px;
+  }
+
+  .topic-nav .back-link,
+  .topic-position {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+}
+
+  </style>
+</head>
+<body id="top">
+  <!-- Шапка учебного модуля выполнена без внешних изображений и зависимостей. -->
+  <header class="site-header">
+    <div class="container navbar">
+      <a class="brand" href="../14-education-platform/index.html">
+<span class="brand-meta">
+          <strong>РТУ МИРЭА</strong>
+          <span>Кафедра ВМ-3 · Интерактивный учебный модуль</span>
+        </span>
+      </a>
+<button class="nav-toggle" id="navToggle" type="button" aria-label="Открыть меню" aria-expanded="false" aria-controls="primaryNav"><span class="nav-toggle-bar" aria-hidden="true"></span></button>
+      <nav class="nav-links" id="primaryNav" aria-label="Навигация по странице">
+        <a href="#theory">Теория</a>
+        <a href="#model">Модель</a>
+        <a href="#steps">Шаги</a>
+        <a href="#compare">Сравнение</a>
+        <a href="#practice">Проверка</a>
+        <a href="#summary">Итог</a>
+      </nav>
+          <button class="theme-toggle" id="themeToggle" type="button" aria-label="Переключить тему" aria-pressed="false">
+        <span class="theme-toggle-track" aria-hidden="true">
+          <span class="theme-toggle-thumb"></span>
+        </span>
+        <span class="theme-toggle-text">Светлая</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="container back-row">
+    <nav class="topic-nav" aria-label="Навигация между темами">
+      <a class="back-link" href="../14-education-platform/index.html#catalog">← К каталогу</a>
+      <a class="back-link" href="../14-education-platform/index.html#route">К маршруту</a>
+      <span class="topic-position">Тема 08 из 13</span>
+      <a class="back-link topic-nav-link" href="../07-derivative-applications/index.html">← Предыдущая тема</a>
+      <a class="back-link topic-nav-link" href="../09-probability-models/index.html">Следующая тема →</a>
+    </nav>
+  </div>
+
+  <main>
+    <section class="hero-band">
+      <div class="container hero">
+        <div>
+          <span class="department-chip">РТУ МИРЭА · ВМ-3</span>
+          <h1>Градиент функции нескольких переменных и градиентный спуск</h1>
+          <p>Модуль строит линии уровня функции двух переменных, показывает вектор градиента и траекторию спуска к минимуму.</p>
+          <div class="hero-actions">
+            <a class="button light" href="#model">Перейти к модели</a>
+            <a class="button cyan" href="#practice">Открыть тренажер</a>
+          </div>
+        </div>
+        <aside class="hero-tool" aria-label="Обзорная визуализация">
+          <div class="tool-head">
+            <div>
+              <strong>Линии уровня и траектория</strong>
+              <span>Шаги против градиента</span>
+            </div>
+            <span class="tag">08</span>
+          </div>
+          <div class="hero-canvas-wrap">
+            <canvas id="heroCanvas"></canvas>
+          </div>
+          <div class="metric-row"><div class="metric"><strong>4 функции</strong><span>от параболоида до волнистой формы</span></div><div class="metric"><strong>lr</strong><span>скорость обучения</span></div><div class="metric"><strong>таблица</strong><span>k, x, y, f, |grad|</span></div></div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section" id="theory">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">Теория</span>
+          <h2>Ключевые идеи темы</h2>
+          <p>Градиент показывает направление наибольшего роста функции, а градиентный спуск использует противоположное направление для поиска минимума.</p>
+        </div>
+        <div class="concept-grid"><article class="concept-card"><h3>Градиент</h3><p>Вектор частных производных указывает, куда функция растет быстрее всего.</p></article><article class="concept-card"><h3>Спуск</h3><p>Новая точка получается формулой x_{k+1}=x_k−α∇f(x_k).</p></article><article class="concept-card"><h3>Learning rate</h3><p>Слишком маленький шаг медлит, слишком большой может перескакивать минимум.</p></article></div>
+      </div>
+    </section>
+
+    <section class="section soft" id="model">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">Интерактивная модель</span>
+          <h2>Интерактивный градиентный спуск</h2>
+          <p>Задайте начальную точку, learning rate и число итераций. Траектория появится поверх линий уровня.</p>
+        </div>
+        <div class="visual-layout">
+          <div class="visual-copy">
+            
+            <div class="definition">
+              <h3>Рабочая идея</h3>
+              <p>Линии уровня показывают высоту функции, а красная траектория — последовательность итераций спуска.</p>
+              <div class="formula">p_{k+1} = p_k − α∇f(p_k)</div>
+            </div>
+            
+          </div>
+          <div class="visual-panel">
+            <div class="panel-title">
+              <div>
+                <h3>Спуск к минимуму</h3>
+                <span>Можно запускать все итерации или делать один шаг.</span>
+              </div>
+              <button class="button primary" id="mainActionButton" type="button">Запустить спуск</button>
+            </div>
+            
+            <div class="controls">
+              <div class="control">
+                <label for="gradientFunction">Функция</label>
+                <select id="gradientFunction">
+                  <option value="bowl">x² + y²</option>
+                  <option value="ellipse">x² + 2y²</option>
+                  <option value="shifted">(x - 2)² + (y + 1)²</option>
+                  <option value="wavy">x² + y² + sin(3x)cos(3y)/3</option>
+                </select>
+              </div>
+              <div class="control"><label for="gdX0">x0</label><input id="gdX0" type="number" step="0.1" value="3"></div>
+              <div class="control"><label for="gdY0">y0</label><input id="gdY0" type="number" step="0.1" value="2"></div>
+              <div class="control"><label for="learningRate">learningRate</label><input id="learningRate" type="number" step="0.01" min="0" value="0.12"></div>
+              <div class="control"><label for="iterations">Итераций</label><input id="iterations" type="number" min="1" max="80" value="18"></div>
+              <div class="control">
+                <label>Действия</label>
+                <div class="button-row">
+                  <button class="button small" id="gdStep" type="button">Один шаг</button>
+                  <button class="button small" id="gdReset" type="button">Сбросить</button>
+                </div>
+              </div>
+            </div>
+            <div class="canvas-shell">
+              <canvas class="graph-canvas" id="mainCanvas"></canvas>
+            </div>
+            <div class="status-grid" id="statusGrid">
+              <div class="status" id="statusA"><strong id="statusALabel">Параметр</strong><span id="statusAValue">-</span></div>
+              <div class="status success" id="statusB"><strong id="statusBLabel">Результат</strong><span id="statusBValue">-</span></div>
+              <div class="status warning" id="statusC"><strong id="statusCLabel">Комментарий</strong><span id="statusCValue">-</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="steps">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">Пошаговое решение</span>
+          <h2>Таблица итераций</h2>
+          <p>В таблице видно, как меняются координаты, значение функции и норма градиента.</p>
+        </div>
+        <ol class="steps-list" id="stepsOutput"></ol>
+      </div>
+    </section>
+
+    <section class="section soft" id="compare">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">Сравнение</span>
+          <h2>Параметры спуска</h2>
+          <p>Качество метода зависит от функции, начальной точки и длины шага.</p>
+        </div>
+        <div class="table-card"><table><thead><tr><th>Параметр</th><th>Влияние</th><th>Риск</th></tr></thead><tbody><tr><td>Начальная точка</td><td>задает старт траектории</td><td>может попасть в локальный минимум</td></tr><tr><td>learning rate</td><td>задает длину шага</td><td>скачки при большом значении</td></tr><tr><td>Итерации</td><td>дают уточнение</td><td>лишние шаги тратят время</td></tr></tbody></table></div>
+      </div>
+    </section>
+
+    <section class="section" id="practice">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">Проверка</span>
+          <h2>Мини-тренажер</h2>
+          <p>Ответьте на четыре вопроса и сразу получите короткое объяснение.</p>
+        </div>
+        <div class="quiz-layout">
+          <div class="definition">
+            <h3>Как работать</h3>
+            <p>Выберите вариант ответа, нажмите «Проверить», затем переходите к следующему вопросу. Счет обновляется после каждого ответа.</p>
+            <div class="formula" id="quizScoreBox">Правильных ответов: 0</div>
+          </div>
+          <div class="quiz-panel">
+            <div class="quiz-topline">
+              <span id="quizProgress">Вопрос 1 из 4</span>
+              <span id="quizScore">0 верно</span>
+            </div>
+            <h3 id="quizQuestion">Вопрос</h3>
+            <div class="answer-grid" id="answerGrid"></div>
+            <div class="button-row">
+              <button class="button primary" id="checkAnswer" type="button">Проверить</button>
+              <button class="button" id="nextQuestion" type="button">Следующий</button>
+            </div>
+            <div class="quiz-result" id="quizResult">Выберите ответ.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section soft" id="summary">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">Что запомнить</span>
+          <h2>Итог по теме</h2>
+          <p>Градиентный спуск — базовый алгоритм оптимизации, который хорошо понимать визуально.</p>
+        </div>
+        <div class="concept-grid"><article class="concept-card"><h3>Градиент вверх</h3><p>Он показывает направление роста.</p></article><article class="concept-card"><h3>Спуск вниз</h3><p>Для минимума движутся против градиента.</p></article><article class="concept-card"><h3>Шаг важен</h3><p>Learning rate управляет устойчивостью.</p></article></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <strong>РТУ МИРЭА</strong>
+        <span>Кафедра ВМ-3</span>
+        <p>Интерактивный офлайн-модуль по теме «Градиент функции нескольких переменных и градиентный спуск». Теория, модель, пошаговое объяснение и тренажер собраны в одном HTML-файле.</p>
+      </div>
+      <div class="footer-column">
+        <strong>Разделы</strong>
+        <a href="#theory">Теория</a>
+        <a href="#model">Модель</a>
+        <a href="#practice">Проверка</a>
+        <a href="#summary">Итог</a>
+      </div>
+      <div class="footer-column">
+        <strong>Формат</strong>
+        <span>Офлайн-модуль</span>
+        <span>Один HTML-файл</span>
+        <span>Без CDN и библиотек</span>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <span>Интерактивные математические модели · РТУ МИРЭА · ВМ-3</span>
+    </div>
+  </footer>
+
+  <script>
+    const MODULE_KIND = "gradient";
+    function updateThemeButton(theme) {
+      const button = document.getElementById("themeToggle");
+      if (!button) return;
+      const text = button.querySelector(".theme-toggle-text");
+      if (text) text.textContent = theme === "dark" ? "Темная" : "Светлая";
+      button.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
+    }
+
+    function applyTheme(theme, silent) {
+      const normalized = theme === "dark" ? "dark" : "light";
+      document.documentElement.setAttribute("data-theme", normalized);
+      try {
+        localStorage.setItem("mireaTheme", normalized);
+      } catch (error) {
+        // localStorage может быть недоступен в очень строгих настройках браузера.
+      }
+      updateThemeButton(normalized);
+      if (!silent) {
+        try {
+          window.dispatchEvent(new Event("mirea-theme-change"));
+        } catch (error) {
+          // Старые браузеры просто не выполнят дополнительную перерисовку.
+        }
+      }
+    }
+
+    function initTheme() {
+      let savedTheme = "light";
+      try {
+        savedTheme = localStorage.getItem("mireaTheme") || "light";
+      } catch (error) {
+        savedTheme = "light";
+      }
+      applyTheme(savedTheme, true);
+      const button = document.getElementById("themeToggle");
+      if (button) button.addEventListener("click", toggleTheme);
+    }
+
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute("data-theme") || "light";
+      applyTheme(currentTheme === "dark" ? "light" : "dark");
+    }
+
+
+    function initMobileNav() {
+      const header = document.querySelector(".site-header");
+      const toggle = document.getElementById("navToggle");
+      const nav = document.getElementById("primaryNav");
+      if (!header || !toggle || !nav) return;
+
+      function setOpen(open) {
+        header.classList.toggle("nav-open", open);
+        toggle.setAttribute("aria-expanded", open ? "true" : "false");
+        toggle.setAttribute("aria-label", open ? "Закрыть меню" : "Открыть меню");
+      }
+
+      toggle.addEventListener("click", function () {
+        setOpen(!header.classList.contains("nav-open"));
+      });
+      nav.querySelectorAll("a").forEach(function (link) {
+        link.addEventListener("click", function () { setOpen(false); });
+      });
+      window.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") setOpen(false);
+      });
+      window.addEventListener("resize", function () {
+        if (window.innerWidth > 860) setOpen(false);
+      });
+    }
+function setupCanvas(canvas) {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.max(1, Math.round(rect.width * dpr));
+      canvas.height = Math.max(1, Math.round(rect.height * dpr));
+      const ctx = canvas.getContext("2d");
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      return { ctx, width: rect.width, height: rect.height };
+    }
+
+function formatNumber(value, digits) {
+      if (value == null || value === "") return "-";
+      const number = Number(value);
+      if (!Number.isFinite(number)) return "-";
+      const clean = Math.abs(number) < 1e-10 ? 0 : number;
+      return clean.toLocaleString("ru-RU", { maximumFractionDigits: digits == null ? 3 : digits });
+    }
+
+    function formatInputNumber(value, digits) {
+      const number = Number(value);
+      if (!Number.isFinite(number)) return "";
+      const rounded = Number(number.toFixed(digits == null ? 6 : digits));
+      return String(rounded);
+    }
+
+function readNumber(id, fallback) {
+      const input = document.getElementById(id);
+      if (!input) return fallback;
+      const value = Number(String(input.value).replace(",", "."));
+      return Number.isFinite(value) ? value : fallback;
+    }
+
+function setInput(id, value) {
+      const input = document.getElementById(id);
+      if (input) input.value = value;
+    }
+
+function setText(id, value) {
+      const element = document.getElementById(id);
+      if (element) element.textContent = String(value);
+    }
+
+function setStatus(first, second, third) {
+      const items = [first, second, third];
+      ["A", "B", "C"].forEach(function (key, index) {
+        const item = items[index] || {};
+        setText("status" + key + "Label", item.label || "-");
+        setText("status" + key + "Value", item.value || "-");
+        const box = document.getElementById("status" + key);
+        if (box) {
+          box.className = "status" + (item.tone ? " " + item.tone : "");
+        }
+      });
+    }
+
+function setSteps(lines) {
+      const output = document.getElementById("stepsOutput");
+      if (!output) return;
+      output.innerHTML = "";
+      lines.forEach(function (line) {
+        const item = document.createElement("li");
+        item.textContent = line;
+        output.appendChild(item);
+      });
+    }
+
+function bindInputs(ids, handler) {
+      ids.forEach(function (id) {
+        const element = document.getElementById(id);
+        if (!element) return;
+        element.addEventListener("input", handler);
+        element.addEventListener("change", handler);
+      });
+    }
+
+function getThemePalette() {
+      const styles = typeof getComputedStyle === "function" ? getComputedStyle(document.documentElement) : null;
+      function cssVar(name, fallback) {
+        const value = styles ? styles.getPropertyValue(name).trim() : "";
+        return value || fallback;
+      }
+      const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+      return {
+        isDark: isDark,
+        canvasBg: cssVar("--graph-bg", isDark ? "#0b1422" : "#ffffff"),
+        panelBg: cssVar("--paper", isDark ? "#101a2b" : "#ffffff"),
+        softBg: cssVar("--graph-soft", isDark ? "#101a2b" : "#f7fbfd"),
+        grid: cssVar("--graph-grid", isDark ? "rgba(167, 217, 222, 0.12)" : "rgba(53, 92, 168, 0.13)"),
+        axis: cssVar("--graph-axis", isDark ? "rgba(238, 246, 255, 0.34)" : "rgba(58, 65, 65, 0.42)"),
+        text: cssVar("--graph-text", isDark ? "#a8bac8" : "#6e7b80"),
+        ink: isDark ? "#eef6ff" : "#3a4141",
+        line: cssVar("--line", isDark ? "rgba(167, 217, 222, 0.18)" : "#d7e0ea")
+      };
+    }
+
+    function drawGrid(ctx, width, height, step) {
+      const palette = getThemePalette();
+      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = palette.canvasBg;
+      ctx.fillRect(0, 0, width, height);
+      ctx.strokeStyle = palette.grid;
+      ctx.lineWidth = 1;
+      for (let x = 0; x <= width; x += step) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+        ctx.stroke();
+      }
+      for (let y = 0; y <= height; y += step) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
+      }
+    }
+
+function createMapper(width, height, xMin, xMax, yMin, yMax, padding) {
+      const pad = padding || 34;
+      const safeX = Math.abs(xMax - xMin) < 1e-9 ? 1 : xMax - xMin;
+      const safeY = Math.abs(yMax - yMin) < 1e-9 ? 1 : yMax - yMin;
+      return {
+        xMin: xMin,
+        xMax: xMax,
+        yMin: yMin,
+        yMax: yMax,
+        toX: function (x) { return pad + (x - xMin) / safeX * (width - pad * 2); },
+        toY: function (y) { return height - pad - (y - yMin) / safeY * (height - pad * 2); }
+      };
+    }
+
+function drawAxes(ctx, width, height, map, xLabel, yLabel) {
+      const palette = getThemePalette();
+      ctx.strokeStyle = palette.axis;
+      ctx.lineWidth = 1.2;
+      ctx.fillStyle = palette.text;
+      ctx.font = "12px Helvetica, Arial";
+      if (map.yMin <= 0 && map.yMax >= 0) {
+        const y0 = map.toY(0);
+        ctx.beginPath();
+        ctx.moveTo(28, y0);
+        ctx.lineTo(width - 18, y0);
+        ctx.stroke();
+        ctx.fillText(xLabel || "x", width - 26, y0 - 8);
+      }
+      if (map.xMin <= 0 && map.xMax >= 0) {
+        const x0 = map.toX(0);
+        ctx.beginPath();
+        ctx.moveTo(x0, 18);
+        ctx.lineTo(x0, height - 28);
+        ctx.stroke();
+        ctx.fillText(yLabel || "y", x0 + 8, 28);
+      }
+    }
+
+function drawLinePlot(ctx, map, points, color, width) {
+      ctx.strokeStyle = color;
+      ctx.lineWidth = width || 2;
+      ctx.beginPath();
+      let started = false;
+      points.forEach(function (point) {
+        if (!Number.isFinite(point.x) || !Number.isFinite(point.y)) {
+          started = false;
+          return;
+        }
+        const px = map.toX(point.x);
+        const py = map.toY(point.y);
+        if (!started) {
+          ctx.moveTo(px, py);
+          started = true;
+        } else {
+          ctx.lineTo(px, py);
+        }
+      });
+      ctx.stroke();
+    }
+
+function drawPoint(ctx, map, x, y, color, label) {
+      if (!Number.isFinite(x) || !Number.isFinite(y)) return;
+      const palette = getThemePalette();
+      const px = map.toX(x);
+      const py = map.toY(y);
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(px, py, 5, 0, Math.PI * 2);
+      ctx.fill();
+      if (label) {
+        ctx.fillStyle = palette.ink;
+        ctx.font = "12px Helvetica, Arial";
+        ctx.fillText(label, px + 8, py - 8);
+      }
+    }
+
+function drawArrow(ctx, map, from, to, color, label) {
+      if (!from || !to) return;
+      const palette = getThemePalette();
+      const x1 = map.toX(from.x);
+      const y1 = map.toY(from.y);
+      const x2 = map.toX(to.x);
+      const y2 = map.toY(to.y);
+      const angle = Math.atan2(y2 - y1, x2 - x1);
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
+      ctx.lineWidth = 2.4;
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x2, y2);
+      ctx.lineTo(x2 - 10 * Math.cos(angle - Math.PI / 6), y2 - 10 * Math.sin(angle - Math.PI / 6));
+      ctx.lineTo(x2 - 10 * Math.cos(angle + Math.PI / 6), y2 - 10 * Math.sin(angle + Math.PI / 6));
+      ctx.closePath();
+      ctx.fill();
+      if (label) {
+        ctx.fillStyle = palette.ink;
+        ctx.font = "12px Helvetica, Arial";
+        ctx.fillText(label, x2 + 7, y2 - 7);
+      }
+    }
+
+function drawLegend(ctx, items, x, y) {
+      const palette = getThemePalette();
+      ctx.font = "12px Helvetica, Arial";
+      items.forEach(function (item, index) {
+        const yy = y + index * 20;
+        ctx.fillStyle = item.color;
+        ctx.fillRect(x, yy - 10, 18, 4);
+        ctx.fillStyle = palette.ink;
+        ctx.fillText(item.label, x + 26, yy - 5);
+      });
+    }
+
+function getLineSegment(a, b, c, xMin, xMax, yMin, yMax) {
+      const points = [];
+      function add(x, y) {
+        if (Number.isFinite(x) && Number.isFinite(y) && x >= xMin - 1e-8 && x <= xMax + 1e-8 && y >= yMin - 1e-8 && y <= yMax + 1e-8) {
+          if (!points.some(function (p) { return Math.abs(p.x - x) < 1e-7 && Math.abs(p.y - y) < 1e-7; })) {
+            points.push({ x: x, y: y });
+          }
+        }
+      }
+      if (Math.abs(b) > 1e-9) {
+        add(xMin, (c - a * xMin) / b);
+        add(xMax, (c - a * xMax) / b);
+      }
+      if (Math.abs(a) > 1e-9) {
+        add((c - b * yMin) / a, yMin);
+        add((c - b * yMax) / a, yMax);
+      }
+      return points.slice(0, 2);
+    }
+
+function drawImplicit(ctx, map, fn, color, samples) {
+      const count = samples || 70;
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2;
+      for (let i = 0; i < count; i++) {
+        for (let j = 0; j < count; j++) {
+          const x0 = map.xMin + (map.xMax - map.xMin) * i / count;
+          const x1 = map.xMin + (map.xMax - map.xMin) * (i + 1) / count;
+          const y0 = map.yMin + (map.yMax - map.yMin) * j / count;
+          const y1 = map.yMin + (map.yMax - map.yMin) * (j + 1) / count;
+          const corners = [
+            { x: x0, y: y0, v: fn(x0, y0) },
+            { x: x1, y: y0, v: fn(x1, y0) },
+            { x: x1, y: y1, v: fn(x1, y1) },
+            { x: x0, y: y1, v: fn(x0, y1) }
+          ];
+          if (corners.some(function (p) { return !Number.isFinite(p.v); })) continue;
+          const intersections = [];
+          for (let e = 0; e < 4; e++) {
+            const p = corners[e];
+            const q = corners[(e + 1) % 4];
+            if (p.v === 0) intersections.push({ x: p.x, y: p.y });
+            if (p.v * q.v < 0) {
+              const t = Math.abs(p.v) / (Math.abs(p.v) + Math.abs(q.v));
+              intersections.push({ x: p.x + (q.x - p.x) * t, y: p.y + (q.y - p.y) * t });
+            }
+          }
+          if (intersections.length >= 2) {
+            ctx.beginPath();
+            ctx.moveTo(map.toX(intersections[0].x), map.toY(intersections[0].y));
+            ctx.lineTo(map.toX(intersections[1].x), map.toY(intersections[1].y));
+            ctx.stroke();
+          }
+        }
+      }
+    }
+
+function drawNoData(ctx, width, height, text) {
+      const palette = getThemePalette();
+      drawGrid(ctx, width, height, 24);
+      ctx.fillStyle = palette.text;
+      ctx.font = "700 15px Helvetica, Arial";
+      ctx.textAlign = "center";
+      ctx.fillText(text, width / 2, height / 2);
+      ctx.textAlign = "left";
+    }
+
+function initQuiz(questions) {
+      let index = 0;
+      let selected = null;
+      let checked = false;
+      let score = 0;
+      const answerGrid = document.getElementById("answerGrid");
+      const checkButton = document.getElementById("checkAnswer");
+      const nextButton = document.getElementById("nextQuestion");
+
+      function renderQuestion() {
+        const question = questions[index];
+        selected = null;
+        checked = false;
+        setText("quizProgress", "Вопрос " + (index + 1) + " из " + questions.length);
+        setText("quizScore", score + " верно");
+        setText("quizScoreBox", "Правильных ответов: " + score);
+        setText("quizQuestion", question.question);
+        const quizResult = document.getElementById("quizResult");
+        if (quizResult) quizResult.className = "quiz-result";
+        setText("quizResult", "Выберите ответ.");
+        answerGrid.innerHTML = "";
+        question.options.forEach(function (option, optionIndex) {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "answer";
+          button.textContent = option;
+          button.addEventListener("click", function () {
+            if (checked) return;
+            selected = optionIndex;
+            answerGrid.querySelectorAll(".answer").forEach(function (item) { item.classList.remove("selected"); });
+            button.classList.add("selected");
+          });
+          answerGrid.appendChild(button);
+        });
+        nextButton.textContent = index === questions.length - 1 ? "Завершить" : "Следующий";
+      }
+
+      checkButton.addEventListener("click", function () {
+        if (selected === null) {
+          const quizResult = document.getElementById("quizResult");
+          if (quizResult) quizResult.className = "quiz-result warning";
+          setText("quizResult", "Сначала выберите вариант ответа.");
+          return;
+        }
+        if (checked) return;
+        checked = true;
+        const question = questions[index];
+        const buttons = answerGrid.querySelectorAll(".answer");
+        buttons.forEach(function (button, optionIndex) {
+          if (optionIndex === question.correct) button.classList.add("correct");
+          if (optionIndex === selected && selected !== question.correct) button.classList.add("wrong");
+        });
+        const quizResult = document.getElementById("quizResult");
+        if (selected === question.correct) {
+          score += 1;
+          if (quizResult) quizResult.className = "quiz-result success";
+          setText("quizResult", "Правильно. " + question.explain);
+        } else {
+          if (quizResult) quizResult.className = "quiz-result warning";
+          setText("quizResult", "Неправильно. " + question.explain);
+        }
+        setText("quizScore", score + " верно");
+        setText("quizScoreBox", "Правильных ответов: " + score);
+      });
+
+      nextButton.addEventListener("click", function () {
+        if (index < questions.length - 1) {
+          index += 1;
+          renderQuestion();
+        } else {
+          setText("quizQuestion", "Тренажер завершен");
+          answerGrid.innerHTML = "";
+          setText("quizProgress", "Итог");
+          setText("quizResult", "Ваш результат: " + score + " из " + questions.length + ". При необходимости вернитесь к модели и повторите тему.");
+        }
+      });
+
+      renderQuestion();
+    }
+
+function getQuizData(kind) {
+      const data = {
+        determinants: [
+          { question: "Чему равен det diag(2, 3, 4)?", options: ["9", "24", "-24", "0"], correct: 1, explain: "Определитель треугольной матрицы равен произведению диагональных элементов." },
+          { question: "Что происходит с определителем при перестановке двух строк?", options: ["Не меняется", "Умножается на 2", "Меняет знак", "Становится нулем"], correct: 2, explain: "Одна перестановка строк меняет знак определителя." },
+          { question: "Когда удобнее использовать разложение?", options: ["Когда есть строка с нулями", "Только для диагональных матриц", "Только при det = 0", "Никогда"], correct: 0, explain: "Нули уменьшают число миноров, которые нужно вычислять." },
+          { question: "Если две строки пропорциональны, то определитель...", options: ["равен 1", "равен сумме диагоналей", "равен нулю", "всегда положителен"], correct: 2, explain: "Пропорциональные строки делают строки линейно зависимыми." }
+        ],
+        systems: [
+          { question: "Если D не равен нулю, система 2x2 имеет...", options: ["одно решение", "нет решений", "бесконечно много решений", "только y = 0"], correct: 0, explain: "Ненулевой главный определитель гарантирует единственное решение." },
+          { question: "Две параллельные несовпадающие прямые дают...", options: ["одно решение", "нет решений", "бесконечно много решений", "два решения"], correct: 1, explain: "У параллельных разных прямых нет общей точки." },
+          { question: "Метод Крамера напрямую применим, когда...", options: ["D = 0", "D не равен 0", "все коэффициенты равны 1", "c1 = c2"], correct: 1, explain: "Формулы x = Dx / D и y = Dy / D требуют деления на ненулевой D." },
+          { question: "Совпадающие прямые соответствуют...", options: ["нет решений", "бесконечно много решений", "ровно одному решению", "ошибке ввода"], correct: 1, explain: "Каждая точка общей прямой является решением системы." }
+        ],
+        vectors: [
+          { question: "(1,2,0) + (3,-1,4) =", options: ["(4,1,4)", "(2,3,4)", "(3,2,4)", "(4,3,0)"], correct: 0, explain: "Координаты складываются покомпонентно." },
+          { question: "Скалярное произведение (1,0,0) и (0,5,0) равно...", options: ["5", "1", "0", "-5"], correct: 2, explain: "Перпендикулярные векторы имеют нулевое скалярное произведение." },
+          { question: "Смешанное произведение равно нулю, если векторы...", options: ["компланарны", "единичные", "равны", "параллельны оси x"], correct: 0, explain: "Нулевой объем параллелепипеда означает компланарность." },
+          { question: "Векторное произведение a x b перпендикулярно...", options: ["только a", "только b", "a и b", "оси y"], correct: 2, explain: "Результат ортогонален обоим исходным векторам." }
+        ],
+        line: [
+          { question: "В общем уравнении Ax + By + C = 0 нормальный вектор равен...", options: ["(A, B)", "(-B, A)", "(C, A)", "(1, k)"], correct: 0, explain: "Коэффициенты A и B задают нормаль к прямой." },
+          { question: "Для y = kx + b угловой коэффициент равен...", options: ["b", "k", "-1/k", "A"], correct: 1, explain: "Коэффициент k показывает наклон прямой." },
+          { question: "Через две различные точки проходит...", options: ["ни одной прямой", "ровно одна прямая", "две прямые", "бесконечно много прямых"], correct: 1, explain: "Две разные точки однозначно задают прямую." },
+          { question: "Точка принадлежит прямой, если при подстановке...", options: ["получается 0", "получается 1", "x = y", "A = B"], correct: 0, explain: "Для общего уравнения левая часть должна обращаться в ноль." }
+        ],
+        conics: [
+          { question: "Если A и C одного знака и правая часть положительна, чаще всего это...", options: ["эллипс", "гипербола", "парабола", "пустое множество"], correct: 0, explain: "Сумма квадратов с одинаковыми знаками задает эллиптический тип." },
+          { question: "Если один квадрат отсутствует, возможна...", options: ["парабола", "эллипс", "окружность", "конус"], correct: 0, explain: "Парабола содержит квадрат только по одной переменной." },
+          { question: "Центр уравнения с A и C не равными нулю находится через...", options: ["выделение полных квадратов", "деление F на A", "замену y на x", "подбор точек"], correct: 0, explain: "Сдвиги появляются при выделении полных квадратов." },
+          { question: "Окружность является частным случаем...", options: ["эллипса", "гиперболы", "параболы", "прямой"], correct: 0, explain: "У окружности полуоси эллипса равны." }
+        ],
+        surfaces: [
+          { question: "x²/a² + y²/b² + z²/c² = 1 задает...", options: ["эллипсоид", "конус", "цилиндр", "параболоид"], correct: 0, explain: "Все три квадрата входят с положительными знаками и равны 1." },
+          { question: "Разные знаки у квадратов часто указывают на...", options: ["гиперболоид", "сферу", "окружность", "плоскость z = 0"], correct: 0, explain: "Гиперболоиды и гиперболический параболоид связаны со знаками." },
+          { question: "У цилиндра одна координата...", options: ["не входит в уравнение", "всегда равна 1", "обязательно отрицательна", "равна другой"], correct: 0, explain: "Цилиндр протянут вдоль отсутствующей переменной." },
+          { question: "Сечения помогают понять...", options: ["форму поверхности", "цвет линии", "имя переменной", "размер шрифта"], correct: 0, explain: "Сечения плоскостями показывают характерные кривые." }
+        ],
+        derivative: [
+          { question: "Если f'(x0) > 0, функция около точки обычно...", options: ["возрастает", "убывает", "не определена", "постоянна"], correct: 0, explain: "Положительная производная означает положительный наклон касательной." },
+          { question: "Касательная в точке использует значение...", options: ["f(x0) и f'(x0)", "только f(0)", "только x²", "только максимум"], correct: 0, explain: "Уравнение касательной строится по точке и наклону." },
+          { question: "Критическая точка часто задается условием...", options: ["f'(x) = 0", "f(x) = 0", "x = 0 всегда", "f'(x) = 1"], correct: 0, explain: "Внутренние экстремумы ищут среди точек с нулевой производной." },
+          { question: "Максимальная площадь прямоугольника при фиксированном периметре достигается у...", options: ["квадрата", "очень узкого прямоугольника", "отрезка", "любой формы"], correct: 0, explain: "При заданном периметре площадь максимальна у квадрата." }
+        ],
+        gradient: [
+          { question: "Градиент направлен в сторону...", options: ["наибольшего роста функции", "наибольшего убывания", "оси x всегда", "случайно"], correct: 0, explain: "Вектор grad f показывает направление максимального увеличения." },
+          { question: "Градиентный спуск делает шаг примерно как...", options: ["x - alpha grad f", "x + alpha grad f", "x * grad f", "grad f / x"], correct: 0, explain: "Для минимума движутся против градиента." },
+          { question: "Слишком большой learning rate может привести к...", options: ["скачкам мимо минимума", "точному ответу всегда", "обнулению функции", "исчезновению осей"], correct: 0, explain: "Большой шаг часто вызывает расходимость или колебания." },
+          { question: "Минимум x² + y² находится в точке...", options: ["(0, 0)", "(1, 1)", "(2, -1)", "(-3, 3)"], correct: 0, explain: "Сумма квадратов минимальна при нулевых координатах." }
+        ],
+        probability: [
+          { question: "Вероятность орла у честной монеты равна...", options: ["1/2", "1/3", "1/6", "1"], correct: 0, explain: "У честной монеты два равновозможных исхода." },
+          { question: "Наиболее вероятная сумма двух кубиков...", options: ["7", "2", "12", "1"], correct: 0, explain: "Сумма 7 получается шестью способами." },
+          { question: "Экспериментальная частота при росте числа испытаний обычно...", options: ["приближается к теоретической", "становится отрицательной", "всегда равна 0", "не считается"], correct: 0, explain: "Это проявление закона больших чисел." },
+          { question: "Вероятность невозможного события равна...", options: ["0", "1", "1/2", "100"], correct: 0, explain: "Невозможное событие не происходит ни при одном исходе." }
+        ],
+        totalBayes: [
+          { question: "Формула полной вероятности суммирует...", options: ["вклады гипотез", "только P(H1)", "только апостериорные вероятности", "случайные числа"], correct: 0, explain: "Каждая гипотеза дает вклад P(Hi)P(A|Hi)." },
+          { question: "В формуле Байеса знаменатель это...", options: ["P(A)", "P(Hi)", "P(A|Hi)", "1 - P(A)"], correct: 0, explain: "Знаменатель нормирует апостериорные вероятности." },
+          { question: "Сумма P(H1), P(H2), P(H3) должна быть...", options: ["1", "0", "3", "любой"], correct: 0, explain: "Полная группа гипотез имеет суммарную вероятность 1." },
+          { question: "Наиболее вероятная гипотеза после A имеет...", options: ["наибольшее P(Hi|A)", "наименьшее P(Hi)", "нулевой вклад", "самое длинное имя"], correct: 0, explain: "После наблюдения сравнивают апостериорные вероятности." }
+        ],
+        bayesIt: [
+          { question: "Базовая вероятность P(S) важна, потому что...", options: ["редкие события остаются редкими", "она всегда равна 1", "она не входит в формулу", "заменяет признак"], correct: 0, explain: "Даже сильный признак нужно оценивать вместе с частотой события." },
+          { question: "P(S|W) означает...", options: ["вероятность события при наличии признака", "вероятность признака при событии", "вероятность не события", "число писем"], correct: 0, explain: "Вертикальная черта читается как условие." },
+          { question: "В спам-фильтре признак W может быть...", options: ["подозрительное слово", "цвет окна браузера", "номер аудитории", "размер монитора"], correct: 0, explain: "Признак должен быть связан с классифицируемым событием." },
+          { question: "Если P(W|N) велико, признак...", options: ["часто встречается и у обычных объектов", "идеально отделяет событие", "невозможен", "равен P(S)"], correct: 0, explain: "Большая ложная тревога снижает доверие к признаку." }
+        ],
+        taylor: [
+          { question: "Полином Тейлора sin(x) около 0 начинается как...", options: ["x - x³/6", "1 + x", "x²", "1 - x²/2"], correct: 0, explain: "Для синуса ненулевые члены имеют нечетные степени." },
+          { question: "Увеличение порядка полинома обычно...", options: ["улучшает приближение около точки разложения", "всегда ухудшает", "не влияет", "убирает функцию"], correct: 0, explain: "Больше членов учитывает больше производных." },
+          { question: "Точка разложения это...", options: ["центр, около которого строится полином", "конец координатной сетки", "цвет графика", "число испытаний"], correct: 0, explain: "Точность лучше всего рядом с этой точкой." },
+          { question: "Ряд 1/(1-x) около 0 хорошо работает при...", options: ["|x| < 1", "любом x", "только x = 2", "x < -10"], correct: 0, explain: "Геометрический ряд сходится при модуле x меньше 1." }
+        ],
+        direction: [
+          { question: "Поле направлений показывает...", options: ["наклон решения в каждой точке", "только одну точку", "площадь круга", "вероятность"], correct: 0, explain: "Короткие отрезки имеют наклон y' = f(x, y)." },
+          { question: "Метод Эйлера использует формулу...", options: ["y_{n+1}=y_n+h f(x_n,y_n)", "y=x² всегда", "P(A)+P(B)", "det A"], correct: 0, explain: "Следующее значение строится по текущему наклону." },
+          { question: "Изоклина это линия, где...", options: ["наклон одинаков", "x всегда 0", "нет решений", "y отрицателен"], correct: 0, explain: "На изоклине f(x, y) = k." },
+          { question: "Для y' = y при y > 0 наклон...", options: ["положительный", "отрицательный", "нулевой", "не существует"], correct: 0, explain: "Правая часть равна положительному y." }
+        ]
+      };
+      return data[kind] || data.determinants;
+    }
+
+function drawHero(kind) {
+      const canvas = document.getElementById("heroCanvas");
+      if (!canvas) return;
+      const setup = setupCanvas(canvas);
+      const ctx = setup.ctx;
+      const width = setup.width;
+      const height = setup.height;
+      drawGrid(ctx, width, height, 24);
+      ctx.lineWidth = 2;
+      ctx.font = "12px Helvetica, Arial";
+
+      if (kind === "determinants") {
+        const left = width * 0.16;
+        const top = height * 0.18;
+        const cell = Math.min(44, width / 9);
+        const values = [[2, 1, 3], [0, -1, 4], [5, 2, 1]];
+        for (let r = 0; r < 3; r++) {
+          for (let c = 0; c < 5; c++) {
+            ctx.fillStyle = c > 2 ? "#f5f8fb" : "#ffffff";
+            ctx.strokeStyle = getThemePalette().line;
+            ctx.fillRect(left + c * cell, top + r * cell, cell, cell);
+            ctx.strokeRect(left + c * cell, top + r * cell, cell, cell);
+            ctx.fillStyle = "#355ca8";
+            ctx.fillText(values[r][c % 3], left + c * cell + cell * 0.42, top + r * cell + cell * 0.58);
+          }
+        }
+        ctx.strokeStyle = "#355ca8";
+        for (let d = 0; d < 3; d++) {
+          ctx.beginPath();
+          ctx.moveTo(left + d * cell + cell / 2, top + cell / 2);
+          ctx.lineTo(left + (d + 2) * cell + cell / 2, top + 2.5 * cell);
+          ctx.stroke();
+        }
+        ctx.strokeStyle = "#cc534e";
+        ctx.beginPath();
+        ctx.moveTo(left + 2.5 * cell, top + cell / 2);
+        ctx.lineTo(left + cell / 2, top + 2.5 * cell);
+        ctx.stroke();
+      } else if (kind === "systems") {
+        const map = createMapper(width, height, -5, 5, -5, 5, 28);
+        drawAxes(ctx, width, height, map, "x", "y");
+        drawLinePlot(ctx, map, [{ x: -5, y: -3 }, { x: 5, y: 4 }], "#355ca8", 3);
+        drawLinePlot(ctx, map, [{ x: -5, y: 4 }, { x: 5, y: -2 }], "#5fc1cf", 3);
+        drawPoint(ctx, map, 1, 1.2, "#cc534e", "решение");
+      } else if (kind === "vectors") {
+        const map = createMapper(width, height, -5, 6, -4, 6, 32);
+        drawAxes(ctx, width, height, map, "x", "y");
+        drawArrow(ctx, map, { x: 0, y: 0 }, { x: 3, y: 2 }, "#355ca8", "a");
+        drawArrow(ctx, map, { x: 0, y: 0 }, { x: 1, y: 4 }, "#5fc1cf", "b");
+        drawArrow(ctx, map, { x: 0, y: 0 }, { x: 4, y: 6 }, "#1c8f72", "a+b");
+      } else if (kind === "line") {
+        const map = createMapper(width, height, -5, 5, -5, 5, 30);
+        drawAxes(ctx, width, height, map, "x", "y");
+        drawLinePlot(ctx, map, [{ x: -5, y: -2 }, { x: 5, y: 3 }], "#355ca8", 3);
+        drawArrow(ctx, map, { x: 0, y: 0 }, { x: 2, y: 1 }, "#5fc1cf", "v");
+      } else if (kind === "conics") {
+        const map = createMapper(width, height, -5, 5, -4, 4, 30);
+        drawAxes(ctx, width, height, map, "x", "y");
+        ctx.strokeStyle = "#355ca8";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        for (let t = 0; t <= Math.PI * 2 + 0.02; t += 0.04) {
+          const x = 3 * Math.cos(t);
+          const y = 1.8 * Math.sin(t);
+          if (t === 0) ctx.moveTo(map.toX(x), map.toY(y)); else ctx.lineTo(map.toX(x), map.toY(y));
+        }
+        ctx.stroke();
+        drawPoint(ctx, map, 0, 0, "#cc534e", "центр");
+      } else if (kind === "surfaces") {
+        drawSurfacePreview(ctx, width, height);
+      } else if (kind === "derivative") {
+        const map = createMapper(width, height, -3, 3, -1, 6, 30);
+        drawAxes(ctx, width, height, map, "x", "y");
+        const pts = [];
+        for (let x = -3; x <= 3; x += 0.05) pts.push({ x: x, y: x * x });
+        drawLinePlot(ctx, map, pts, "#355ca8", 3);
+        drawLinePlot(ctx, map, [{ x: -2, y: -1 }, { x: 3, y: 9 }], "#5fc1cf", 2);
+        drawPoint(ctx, map, 1, 1, "#cc534e", "x0");
+      } else if (kind === "gradient") {
+        const map = createMapper(width, height, -4, 4, -4, 4, 30);
+        drawAxes(ctx, width, height, map, "x", "y");
+        [1, 2, 3].forEach(function (r) {
+          ctx.strokeStyle = r === 1 ? "#a7d9de" : "#5fc1cf";
+          ctx.beginPath();
+          for (let t = 0; t <= Math.PI * 2 + 0.05; t += 0.05) {
+            const x = r * Math.cos(t);
+            const y = r * Math.sin(t);
+            if (t === 0) ctx.moveTo(map.toX(x), map.toY(y)); else ctx.lineTo(map.toX(x), map.toY(y));
+          }
+          ctx.stroke();
+        });
+        drawLinePlot(ctx, map, [{ x: 3, y: 2.5 }, { x: 2, y: 1.7 }, { x: 1.2, y: 0.9 }, { x: 0.4, y: 0.3 }, { x: 0, y: 0 }], "#cc534e", 3);
+      } else if (kind === "probability") {
+        drawHistogram(ctx, width, height, ["2", "3", "4", "5", "6", "7", "8"], [1, 2, 3, 4, 5, 6, 5], "#355ca8");
+      } else if (kind === "totalBayes" || kind === "bayesIt") {
+        drawBayesTree(ctx, width, height, [0.3, 0.45, 0.25], [0.8, 0.4, 0.15]);
+      } else if (kind === "taylor") {
+        const map = createMapper(width, height, -3, 3, -2, 2, 30);
+        drawAxes(ctx, width, height, map, "x", "y");
+        const real = [];
+        const poly = [];
+        for (let x = -3; x <= 3; x += 0.04) {
+          real.push({ x: x, y: Math.sin(x) });
+          poly.push({ x: x, y: x - x * x * x / 6 });
+        }
+        drawLinePlot(ctx, map, real, "#355ca8", 3);
+        drawLinePlot(ctx, map, poly, "#5fc1cf", 2);
+      } else if (kind === "direction") {
+        drawDirectionPreview(ctx, width, height);
+      }
+    }
+
+function drawHistogram(ctx, width, height, labels, values, color) {
+      drawGrid(ctx, width, height, 24);
+      const maxValue = Math.max(1, Math.max.apply(null, values));
+      const pad = 38;
+      const barWidth = (width - pad * 2) / values.length * 0.72;
+      values.forEach(function (value, index) {
+        const x = pad + index * (width - pad * 2) / values.length + barWidth * 0.2;
+        const barHeight = (height - pad * 2) * value / maxValue;
+        const y = height - pad - barHeight;
+        ctx.fillStyle = color;
+        ctx.fillRect(x, y, barWidth, barHeight);
+        ctx.fillStyle = getThemePalette().text;
+        ctx.font = "12px Helvetica, Arial";
+        ctx.fillText(labels[index], x + barWidth * 0.28, height - 18);
+      });
+    }
+
+function drawBayesTree(ctx, width, height, priors, conditionals) {
+      drawGrid(ctx, width, height, 24);
+      const start = { x: 48, y: height / 2 };
+      ctx.fillStyle = "#355ca8";
+      ctx.beginPath();
+      ctx.arc(start.x, start.y, 8, 0, Math.PI * 2);
+      ctx.fill();
+      priors.forEach(function (p, index) {
+        const hx = width * 0.42;
+        const hy = height * (0.22 + index * 0.28);
+        const ax = width * 0.76;
+        const ay = hy - 28;
+        ctx.strokeStyle = "#355ca8";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(start.x, start.y);
+        ctx.lineTo(hx, hy);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(hx, hy);
+        ctx.lineTo(ax, ay);
+        ctx.strokeStyle = "#5fc1cf";
+        ctx.stroke();
+        ctx.fillStyle = getThemePalette().panelBg;
+        ctx.strokeStyle = getThemePalette().line;
+        ctx.fillRect(hx - 25, hy - 15, 50, 30);
+        ctx.strokeRect(hx - 25, hy - 15, 50, 30);
+        ctx.fillStyle = "#355ca8";
+        ctx.font = "12px Helvetica, Arial";
+        ctx.fillText("H" + (index + 1), hx - 8, hy + 4);
+        ctx.fillText(formatNumber(p, 2), (start.x + hx) / 2, (start.y + hy) / 2 - 5);
+        ctx.fillText(formatNumber(conditionals[index], 2), (hx + ax) / 2, (hy + ay) / 2 - 5);
+        ctx.fillStyle = "#1c8f72";
+        ctx.beginPath();
+        ctx.arc(ax, ay, 7, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    }
+
+function drawSurfacePreview(ctx, width, height) {
+      drawGrid(ctx, width, height, 24);
+      const cx = width / 2;
+      const cy = height / 2 + 18;
+      ctx.strokeStyle = "#355ca8";
+      ctx.lineWidth = 1.5;
+      for (let lat = -3; lat <= 3; lat++) {
+        ctx.beginPath();
+        for (let t = 0; t <= Math.PI * 2 + 0.05; t += 0.05) {
+          const r = Math.cos(lat / 4);
+          const x = cx + 85 * r * Math.cos(t);
+          const y = cy + 28 * r * Math.sin(t) - lat * 18;
+          if (t === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }
+      for (let lon = 0; lon < 8; lon++) {
+        const t = lon * Math.PI / 4;
+        ctx.beginPath();
+        for (let lat = -3; lat <= 3; lat += 0.1) {
+          const r = Math.cos(lat / 4);
+          const x = cx + 85 * r * Math.cos(t);
+          const y = cy + 28 * r * Math.sin(t) - lat * 18;
+          if (lat === -3) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.strokeStyle = "#5fc1cf";
+        ctx.stroke();
+      }
+    }
+
+function drawDirectionPreview(ctx, width, height) {
+      drawGrid(ctx, width, height, 24);
+      const map = createMapper(width, height, -4, 4, -3, 3, 28);
+      drawAxes(ctx, width, height, map, "x", "y");
+      ctx.strokeStyle = "#355ca8";
+      ctx.lineWidth = 1.4;
+      for (let x = -4; x <= 4; x += 0.8) {
+        for (let y = -3; y <= 3; y += 0.6) {
+          const slope = x - y;
+          const angle = Math.atan(slope);
+          const len = 12;
+          const px = map.toX(x);
+          const py = map.toY(y);
+          ctx.beginPath();
+          ctx.moveTo(px - Math.cos(angle) * len / 2, py + Math.sin(angle) * len / 2);
+          ctx.lineTo(px + Math.cos(angle) * len / 2, py - Math.sin(angle) * len / 2);
+          ctx.stroke();
+        }
+      }
+    }
+
+const gradientDefs = {
+      bowl: { label: "x² + y²", f: function (x, y) { return x * x + y * y; }, g: function (x, y) { return { x: 2 * x, y: 2 * y }; }, min: { x: 0, y: 0 } },
+      ellipse: { label: "x² + 2y²", f: function (x, y) { return x * x + 2 * y * y; }, g: function (x, y) { return { x: 2 * x, y: 4 * y }; }, min: { x: 0, y: 0 } },
+      shifted: { label: "(x - 2)² + (y + 1)²", f: function (x, y) { return (x - 2) * (x - 2) + (y + 1) * (y + 1); }, g: function (x, y) { return { x: 2 * (x - 2), y: 2 * (y + 1) }; }, min: { x: 2, y: -1 } },
+      wavy: { label: "x² + y² + sin(3x)cos(3y)/3", f: function (x, y) { return x * x + y * y + Math.sin(3 * x) * Math.cos(3 * y) / 3; }, g: function (x, y) { return { x: 2 * x + Math.cos(3 * x) * Math.cos(3 * y), y: 2 * y - Math.sin(3 * x) * Math.sin(3 * y) }; }, min: { x: -0.305, y: 0 } }
+    };
+
+function initGradient() {
+      const ids = ["gradientFunction", "gdX0", "gdY0", "learningRate", "iterations"];
+      let path = [];
+      function def() { return gradientDefs[document.getElementById("gradientFunction").value] || gradientDefs.bowl; }
+      function resetPath() { path = [{ x: readNumber("gdX0", 3), y: readNumber("gdY0", 2) }]; }
+      function stepOnce() {
+        const d = def();
+        if (!path.length) resetPath();
+        const last = path[path.length - 1];
+        const grad = d.g(last.x, last.y);
+        const lr = Math.max(0, readNumber("learningRate", 0.12));
+        path.push({ x: last.x - lr * grad.x, y: last.y - lr * grad.y });
+      }
+      function renderTable(d) {
+        const rows = path.slice(0, 12).map(function (p, index) {
+          const g = d.g(p.x, p.y);
+          const norm = Math.sqrt(g.x * g.x + g.y * g.y);
+          return "<tr><td>" + index + "</td><td>" + formatNumber(p.x) + "</td><td>" + formatNumber(p.y) + "</td><td>" + formatNumber(d.f(p.x, p.y)) + "</td><td>" + formatNumber(norm) + "</td></tr>";
+        }).join("");
+        document.getElementById("stepsOutput").innerHTML = "<li><div style='overflow-x:auto'><table><thead><tr><th>k</th><th>x</th><th>y</th><th>f(x,y)</th><th>|grad|</th></tr></thead><tbody>" + rows + "</tbody></table></div></li>";
+      }
+      function draw() {
+        if (!path.length) resetPath();
+        const d = def();
+        const canvas = document.getElementById("mainCanvas");
+        const setup = setupCanvas(canvas);
+        const ctx = setup.ctx;
+        const width = setup.width;
+        const height = setup.height;
+        drawGrid(ctx, width, height, 24);
+        const map = createMapper(width, height, -5, 5, -5, 5, 38);
+        drawAxes(ctx, width, height, map, "x", "y");
+        const levels = [0.4, 1, 2, 4, 7, 11, 16, 22, 30];
+        levels.forEach(function (level, index) {
+          drawImplicit(ctx, map, function (x, y) { return d.f(x, y) - level; }, index % 2 ? "#a7d9de" : "#5fc1cf", 50);
+        });
+        drawLinePlot(ctx, map, path, "#cc534e", 3);
+        path.forEach(function (p, index) { if (index % 2 === 0 || index === path.length - 1) drawPoint(ctx, map, p.x, p.y, index === path.length - 1 ? "#355ca8" : "#cc534e", index === path.length - 1 ? "k" : ""); });
+        drawPoint(ctx, map, d.min.x, d.min.y, "#1c8f72", "min");
+        const last = path[path.length - 1];
+        const grad = d.g(last.x, last.y);
+        drawArrow(ctx, map, last, { x: last.x + grad.x * 0.25, y: last.y + grad.y * 0.25 }, "#355ca8", "grad");
+        renderTable(d);
+        const norm = Math.sqrt(grad.x * grad.x + grad.y * grad.y);
+        const firstValue = d.f(path[0].x, path[0].y);
+        const lastValue = d.f(last.x, last.y);
+        setStatus(
+          { label: "Функция", value: d.label, tone: "success" },
+          { label: "Текущая точка", value: "(" + formatNumber(last.x) + "; " + formatNumber(last.y) + "), f = " + formatNumber(lastValue), tone: "success" },
+          { label: "Норма градиента", value: "|grad| = " + formatNumber(norm) + (lastValue > firstValue + 1e-6 ? ". Шаг слишком велик." : ""), tone: lastValue > firstValue + 1e-6 ? "warning" : "" }
+        );
+      }
+      document.getElementById("mainActionButton").addEventListener("click", function () {
+        resetPath();
+        const n = Math.max(1, Math.min(80, Math.round(readNumber("iterations", 18))));
+        for (let i = 0; i < n; i++) stepOnce();
+        draw();
+      });
+      document.getElementById("gdStep").addEventListener("click", function () { stepOnce(); draw(); });
+      document.getElementById("gdReset").addEventListener("click", function () { resetPath(); draw(); });
+      bindInputs(ids, function () { resetPath(); draw(); });
+      resetPath();
+      draw();
+      return draw;
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      initTheme();
+      initMobileNav();
+      drawHero(MODULE_KIND);
+      initQuiz(getQuizData(MODULE_KIND));
+      const render = initGradient();
+      window.addEventListener("resize", function () {
+        drawHero(MODULE_KIND);
+        if (typeof render === "function") render();
+      });
+      window.addEventListener("mirea-theme-change", function () {
+        drawHero(MODULE_KIND);
+        if (typeof render === "function") render();
+      });
+    });
+  </script>
+</body>
+</html>

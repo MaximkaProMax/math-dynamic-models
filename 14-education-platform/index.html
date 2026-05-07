@@ -1,0 +1,2793 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Интерактивные математические модели | РТУ МИРЭА</title>
+  <style>
+
+:root {
+  --mirea-blue: #355ca8;
+  --mirea-cyan: #5fc1cf;
+  --mirea-light: #a7d9de;
+  --mirea-gray: #e6e6e6;
+  --mirea-mid: #3772b3;
+  --ink: #3a4141;
+  --muted: #6e7b80;
+  --paper: #ffffff;
+  --soft: #f5f8fb;
+  --soft-blue: #eaf1fb;
+  --line: #d7e0ea;
+  --success: #1c8f72;
+  --warning: #cc534e;
+  --danger: #cc534e;
+  --shadow: 0 18px 46px rgba(38, 70, 121, 0.12);
+  --radius: 8px;
+  --radius-lg: 14px;
+  --container: 1180px;
+  --font: "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  color: var(--ink);
+  background:
+    linear-gradient(90deg, rgba(53, 92, 168, 0.05) 0 1px, transparent 1px 100%),
+    linear-gradient(180deg, rgba(53, 92, 168, 0.05) 0 1px, transparent 1px 100%),
+    linear-gradient(180deg, #ffffff 0%, #f2f7fb 48%, #ffffff 100%);
+  background-size: 32px 32px, 32px 32px, auto;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+.container {
+  width: min(var(--container), calc(100% - 32px));
+  margin: 0 auto;
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(215, 224, 234, 0.85);
+}
+
+.navbar {
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 10px 0;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  min-width: 178px;
+  flex: 0 1 260px;
+}
+
+
+.brand-meta {
+  display: grid;
+  gap: 2px;
+  line-height: 1.15;
+}
+
+.brand-meta strong {
+  color: var(--mirea-blue);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.brand-meta span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 1 1 420px;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.nav-links a {
+  padding: 9px 12px;
+  border-radius: var(--radius);
+  color: var(--muted);
+  font-size: 14px;
+  transition: 0.2s ease;
+}
+
+.nav-links a:hover,
+.nav-links a:focus-visible {
+  color: var(--mirea-blue);
+  background: var(--soft-blue);
+  outline: none;
+}
+
+.hero-band {
+  padding: 34px 0 44px;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: 1.03fr 0.97fr;
+  gap: 26px;
+  align-items: stretch;
+  min-height: 460px;
+  padding: 32px;
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(circle at 85% 12%, rgba(255, 255, 255, 0.22), transparent 34%),
+    linear-gradient(135deg, #355ca8 0%, #3772b3 47%, #5fc1cf 100%);
+  box-shadow: var(--shadow);
+  color: #ffffff;
+  overflow: hidden;
+}
+
+.hero h1 {
+  margin: 18px 0 18px;
+  max-width: 780px;
+  font-size: clamp(34px, 5vw, 58px);
+  line-height: 1.02;
+  letter-spacing: 0;
+}
+
+.hero p {
+  max-width: 760px;
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.58;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.department-chip {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  min-height: 34px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 10px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #ffffff;
+  color: var(--mirea-blue);
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+  box-shadow: none;
+}
+
+.button:hover,
+.button:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(38, 70, 121, 0.13);
+  outline: none;
+}
+
+.button.primary {
+  background: var(--mirea-blue);
+  border-color: var(--mirea-blue);
+  color: #ffffff;
+}
+
+.button.cyan {
+  background: var(--mirea-cyan);
+  border-color: var(--mirea-cyan);
+  color: #113f4a;
+}
+
+.button.light {
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--mirea-blue);
+}
+
+.button.small {
+  min-height: 36px;
+  padding: 8px 12px;
+  font-size: 13px;
+}
+
+.hero-tool {
+  display: flex;
+  flex-direction: column;
+  min-height: 396px;
+  padding: 18px;
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.96);
+  color: var(--ink);
+  box-shadow: 0 20px 44px rgba(29, 49, 89, 0.2);
+}
+
+.tool-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.tool-head strong {
+  display: block;
+  color: var(--mirea-blue);
+}
+
+.tool-head span {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.hero-canvas-wrap {
+  flex: 1;
+  min-height: 220px;
+  margin: 14px 0;
+  border-radius: var(--radius);
+  background: #ffffff;
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+
+.hero-canvas-wrap canvas,
+.canvas-shell canvas,
+.mini-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.metric-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.metric {
+  padding: 12px;
+  border-radius: var(--radius);
+  background: var(--soft-blue);
+  border: 1px solid var(--line);
+}
+
+.metric strong {
+  display: block;
+  color: var(--mirea-blue);
+  font-size: 17px;
+}
+
+.metric span {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.section {
+  padding: 54px 0;
+}
+
+.section.soft {
+  background: rgba(245, 248, 251, 0.78);
+  border-top: 1px solid rgba(215, 224, 234, 0.65);
+  border-bottom: 1px solid rgba(215, 224, 234, 0.65);
+}
+
+.section-head {
+  max-width: 850px;
+  margin-bottom: 24px;
+}
+
+.eyebrow {
+  display: inline-flex;
+  margin-bottom: 9px;
+  color: var(--mirea-mid);
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+}
+
+.section-head h2 {
+  margin: 0 0 12px;
+  font-size: clamp(28px, 4vw, 42px);
+  line-height: 1.12;
+  color: var(--ink);
+}
+
+.section-head p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.58;
+}
+
+.concept-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.concept-card,
+.quiz-panel,
+.visual-panel,
+.definition,
+.table-card,
+.module-card,
+.route-card {
+  border-radius: var(--radius-lg);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+
+.concept-card {
+  padding: 20px;
+}
+
+.concept-card h3 {
+  margin: 0 0 10px;
+  color: var(--mirea-blue);
+  font-size: 20px;
+}
+
+.concept-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.visual-layout {
+  display: grid;
+  grid-template-columns: 0.78fr 1.22fr;
+  gap: 22px;
+  align-items: start;
+}
+
+.visual-copy {
+  display: grid;
+  gap: 14px;
+}
+
+.definition {
+  padding: 18px;
+}
+
+.definition h3,
+.definition h4 {
+  margin: 0 0 9px;
+  color: var(--mirea-blue);
+}
+
+.definition p,
+.definition li {
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.definition ul,
+.definition ol {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.formula {
+  margin: 12px 0 0;
+  padding: 13px 14px;
+  border-radius: var(--radius);
+  background: var(--soft-blue);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  overflow-x: auto;
+  font-weight: 700;
+}
+
+.visual-panel {
+  padding: 18px;
+}
+
+.panel-title {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.panel-title h3 {
+  margin: 0;
+  color: var(--mirea-blue);
+}
+
+.panel-title span {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.control {
+  display: grid;
+  gap: 6px;
+}
+
+.control.full {
+  grid-column: 1 / -1;
+}
+
+.control label {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.control input,
+.control select {
+  width: 100%;
+  min-height: 40px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 8px 10px;
+  color: var(--ink);
+  background: #ffffff;
+}
+
+.control input[type="range"] {
+  padding: 0;
+}
+
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.matrix-editor,
+.coefficient-grid,
+.vector-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.matrix-editor {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.coefficient-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.vector-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.mini-label {
+  color: var(--mirea-blue);
+  font-weight: 800;
+  align-self: center;
+}
+
+.canvas-shell {
+  height: 420px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.graph-canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.mini-canvas-shell {
+  height: 220px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.status {
+  min-height: 76px;
+  padding: 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: var(--soft);
+}
+
+.status strong {
+  display: block;
+  color: var(--mirea-blue);
+  margin-bottom: 5px;
+}
+
+.status span {
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.status.success {
+  background: rgba(28, 143, 114, 0.08);
+  border-color: rgba(28, 143, 114, 0.22);
+}
+
+.status.success strong {
+  color: var(--success);
+}
+
+.status.warning {
+  background: rgba(204, 83, 78, 0.08);
+  border-color: rgba(204, 83, 78, 0.22);
+}
+
+.status.warning strong {
+  color: var(--warning);
+}
+
+.steps-list {
+  display: grid;
+  gap: 10px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.steps-list li {
+  padding: 13px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #ffffff;
+  color: var(--ink);
+  line-height: 1.45;
+}
+
+.table-card {
+  padding: 18px;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;
+}
+
+th,
+td {
+  padding: 12px 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+
+th {
+  color: var(--mirea-blue);
+  background: var(--soft-blue);
+}
+
+td {
+  color: var(--muted);
+}
+
+.quiz-layout {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 18px;
+  align-items: start;
+}
+
+.quiz-panel {
+  padding: 20px;
+}
+
+.quiz-topline {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--muted);
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
+.answer-grid {
+  display: grid;
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.answer {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  text-align: left;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: #ffffff;
+  color: var(--ink);
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.answer:hover,
+.answer.selected {
+  background: var(--soft-blue);
+  border-color: var(--mirea-cyan);
+}
+
+.answer.correct {
+  background: rgba(28, 143, 114, 0.12);
+  border-color: var(--success);
+}
+
+.answer.wrong {
+  background: rgba(204, 83, 78, 0.12);
+  border-color: var(--warning);
+}
+
+.quiz-result {
+  min-height: 48px;
+  padding: 12px;
+  border-radius: var(--radius);
+  background: var(--soft);
+  border: 1px solid var(--line);
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 12px 0;
+}
+
+.tag {
+  display: inline-flex;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: var(--soft-blue);
+  color: var(--mirea-blue);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.footer {
+  padding: 30px 0;
+  background: #223a68;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.footer strong {
+  color: #ffffff;
+}
+
+.catalog-controls {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 0.8fr auto;
+  gap: 12px;
+  align-items: end;
+  margin-bottom: 18px;
+}
+
+.module-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.module-card {
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.module-card:hover,
+.module-card:focus-within {
+  transform: translateY(-3px);
+  box-shadow: 0 24px 52px rgba(38, 70, 121, 0.16);
+}
+
+.module-card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.module-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius);
+  background: var(--mirea-blue);
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.module-meta {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.module-card h3 {
+  margin: 0;
+  color: var(--mirea-blue);
+  font-size: 20px;
+  line-height: 1.2;
+}
+
+.module-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.feature-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 7px 12px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.feature-list span::before {
+  content: "✓ ";
+  color: var(--success);
+  font-weight: 800;
+}
+
+.timeline {
+  display: grid;
+  gap: 14px;
+}
+
+.route-card {
+  display: grid;
+  grid-template-columns: 190px 1fr auto;
+  gap: 16px;
+  align-items: center;
+  padding: 18px;
+}
+
+.route-card strong {
+  color: var(--mirea-blue);
+}
+
+.route-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.site-header,
+.hero,
+.hero-tool,
+.section-head,
+.concept-card,
+.visual-copy .definition,
+.visual-panel,
+.canvas-shell,
+.status,
+.table-card,
+.quiz-panel,
+.module-card,
+.route-card {
+  animation: fadeSlideIn 220ms ease both;
+}
+
+.hero-tool,
+.visual-panel,
+.quiz-panel {
+  animation-delay: 40ms;
+}
+
+.concept-card:nth-child(2),
+.module-card:nth-child(2),
+.route-card:nth-child(2),
+.status:nth-child(2) {
+  animation-delay: 35ms;
+}
+
+.concept-card:nth-child(3),
+.module-card:nth-child(3),
+.route-card:nth-child(3),
+.status:nth-child(3) {
+  animation-delay: 70ms;
+}
+
+.concept-card:nth-child(n+4),
+.module-card:nth-child(n+4),
+.route-card:nth-child(n+4) {
+  animation-delay: 95ms;
+}
+
+.topic-visual {
+  width: 112px;
+  height: 64px;
+  flex: 0 0 auto;
+  animation: fadeSlideIn 240ms ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .guide-step,
+  .guide-detail.is-changing {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+}
+
+
+:root[data-theme="dark"] {
+  --ink: #eef6ff;
+  --muted: #a8bac8;
+  --paper: #101a2b;
+  --soft: #0b1422;
+  --soft-blue: rgba(95, 193, 207, 0.12);
+  --line: rgba(167, 217, 222, 0.18);
+  --shadow: 0 18px 46px rgba(0, 0, 0, 0.38);
+}
+
+:root[data-theme="dark"] body {
+  background:
+    linear-gradient(90deg, rgba(95, 193, 207, 0.06) 0 1px, transparent 1px 100%),
+    linear-gradient(180deg, rgba(95, 193, 207, 0.05) 0 1px, transparent 1px 100%),
+    radial-gradient(circle at 20% 0%, rgba(53, 92, 168, 0.36), transparent 34%),
+    linear-gradient(180deg, #08111f 0%, #0d1728 52%, #09111d 100%);
+  background-size: 32px 32px, 32px 32px, auto, auto;
+}
+
+body,
+.site-header,
+.hero-tool,
+.concept-card,
+.visual-panel,
+.quiz-panel,
+.status,
+.definition,
+.table-card,
+.footer,
+input,
+select,
+button,
+.button,
+.back-link,
+.theme-toggle,
+.canvas-shell,
+.hero-canvas-wrap,
+.mini-canvas-shell,
+.metric,
+.steps-list li,
+.module-card,
+.route-card {
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease,
+    filter 180ms ease;
+}
+
+:root[data-theme="dark"] .site-header {
+  background: rgba(8, 17, 31, 0.9);
+  border-bottom-color: rgba(167, 217, 222, 0.16);
+}
+
+:root[data-theme="dark"] .brand-meta strong,
+:root[data-theme="dark"] .nav-links a:hover,
+:root[data-theme="dark"] .nav-links a:focus-visible,
+:root[data-theme="dark"] .concept-card h3,
+:root[data-theme="dark"] .definition h3,
+:root[data-theme="dark"] .definition h4,
+:root[data-theme="dark"] .panel-title h3,
+:root[data-theme="dark"] .module-card h3,
+:root[data-theme="dark"] .metric strong,
+:root[data-theme="dark"] .status strong,
+:root[data-theme="dark"] .mini-label {
+  color: var(--mirea-light);
+}
+
+:root[data-theme="dark"] .hero {
+  background:
+    radial-gradient(circle at 84% 10%, rgba(95, 193, 207, 0.24), transparent 34%),
+    linear-gradient(135deg, #1c3162 0%, #264f8e 48%, #2a8da4 100%);
+}
+
+:root[data-theme="dark"] .hero-tool,
+:root[data-theme="dark"] .concept-card,
+:root[data-theme="dark"] .visual-panel,
+:root[data-theme="dark"] .quiz-panel,
+:root[data-theme="dark"] .definition,
+:root[data-theme="dark"] .table-card,
+:root[data-theme="dark"] .module-card,
+:root[data-theme="dark"] .route-card {
+  background: rgba(16, 26, 43, 0.96);
+  border-color: rgba(167, 217, 222, 0.18);
+}
+
+:root[data-theme="dark"] .section.soft {
+  background: rgba(11, 20, 34, 0.78);
+  border-color: rgba(167, 217, 222, 0.12);
+}
+
+:root[data-theme="dark"] .hero-canvas-wrap,
+:root[data-theme="dark"] .canvas-shell,
+:root[data-theme="dark"] .mini-canvas-shell {
+  background: #0b1422;
+  border-color: rgba(167, 217, 222, 0.2);
+}
+
+:root[data-theme="dark"] .metric,
+:root[data-theme="dark"] .status,
+:root[data-theme="dark"] .steps-list li,
+:root[data-theme="dark"] .tag,
+:root[data-theme="dark"] .formula {
+  background: rgba(95, 193, 207, 0.1);
+  border-color: rgba(167, 217, 222, 0.17);
+}
+
+:root[data-theme="dark"] .status.success {
+  background: rgba(28, 143, 114, 0.16);
+  border-color: rgba(28, 143, 114, 0.34);
+}
+
+:root[data-theme="dark"] .status.warning,
+:root[data-theme="dark"] .quiz-result.bad {
+  background: rgba(204, 83, 78, 0.16);
+  border-color: rgba(204, 83, 78, 0.34);
+}
+
+:root[data-theme="dark"] input,
+:root[data-theme="dark"] select {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(167, 217, 222, 0.22);
+  color: var(--ink);
+}
+
+:root[data-theme="dark"] input::placeholder {
+  color: rgba(168, 186, 200, 0.72);
+}
+
+:root[data-theme="dark"] th {
+  background: rgba(95, 193, 207, 0.12);
+}
+
+:root[data-theme="dark"] td,
+:root[data-theme="dark"] th {
+  border-color: rgba(167, 217, 222, 0.14);
+}
+
+:root[data-theme="dark"] .button {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(167, 217, 222, 0.22);
+  color: var(--mirea-light);
+}
+
+:root[data-theme="dark"] .button.primary {
+  background: #355ca8;
+  border-color: #4a75c3;
+  color: #ffffff;
+}
+
+:root[data-theme="dark"] .button.cyan {
+  background: #5fc1cf;
+  border-color: #5fc1cf;
+  color: #07151c;
+}
+
+:root[data-theme="dark"] .button.light {
+  background: rgba(255, 255, 255, 0.13);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.theme-toggle:hover,
+.theme-toggle:focus-visible {
+  background: var(--soft-blue);
+  color: var(--mirea-blue);
+  outline: none;
+}
+
+.theme-toggle-icon {
+  color: var(--mirea-cyan);
+  font-size: 16px;
+  line-height: 1;
+}
+
+:root[data-theme="dark"] .theme-toggle {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(167, 217, 222, 0.22);
+  color: var(--ink);
+}
+
+:root[data-theme="dark"] .theme-toggle:hover,
+:root[data-theme="dark"] .theme-toggle:focus-visible {
+  color: var(--mirea-light);
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--mirea-blue);
+  font-size: 0.92rem;
+  font-weight: 900;
+  transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease;
+}
+
+.back-link:hover,
+.back-link:focus-visible {
+  background: var(--soft-blue);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(38, 70, 121, 0.14);
+  outline: none;
+}
+
+:root[data-theme="dark"] .back-link {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--mirea-light);
+  border-color: rgba(167, 217, 222, 0.2);
+}
+
+.button.route,
+.route-button {
+  border: 0;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--mirea-blue), var(--mirea-cyan));
+  box-shadow: 0 16px 34px rgba(53, 92, 168, 0.28);
+}
+
+.button.route:hover,
+.button.route:focus-visible,
+.route-button:hover,
+.route-button:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 22px 46px rgba(53, 92, 168, 0.36);
+  filter: saturate(1.08);
+  outline: 2px solid rgba(255, 255, 255, 0.55);
+  outline-offset: 2px;
+}
+
+.button.route:active,
+.route-button:active {
+  transform: translateY(0);
+  box-shadow: 0 10px 22px rgba(53, 92, 168, 0.24);
+}
+
+.service-map-wrap {
+  min-height: 320px;
+}
+
+.footer {
+  padding: 46px 0 26px;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(95, 193, 207, 0.22), transparent 32%),
+    linear-gradient(135deg, #1f2d44 0%, #263a5f 52%, #234b68 100%);
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.35fr 0.8fr 0.8fr;
+  gap: 28px;
+}
+
+.footer-brand {
+  display: grid;
+  gap: 8px;
+}
+
+.footer-brand strong {
+  color: #ffffff;
+  font-size: 22px;
+}
+
+.footer-brand span,
+.footer-column strong {
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.footer-brand p {
+  max-width: 560px;
+  margin: 4px 0 0;
+  color: rgba(255, 255, 255, 0.74);
+  line-height: 1.55;
+}
+
+.footer-column {
+  display: grid;
+  align-content: start;
+  gap: 9px;
+}
+
+.footer a,
+.footer-column span {
+  color: rgba(255, 255, 255, 0.74);
+}
+
+.footer a:hover,
+.footer a:focus-visible {
+  color: #ffffff;
+  outline: none;
+}
+
+.footer-bottom {
+  margin-top: 26px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+
+/* mirea-polish-v3 */
+:root {
+  --graph-bg: #ffffff;
+  --graph-soft: #f7fbfd;
+  --graph-grid: rgba(53, 92, 168, 0.13);
+  --graph-axis: rgba(58, 65, 65, 0.42);
+  --graph-text: #6e7b80;
+}
+
+:root[data-theme="dark"] {
+  --graph-bg: #0b1422;
+  --graph-soft: #101a2b;
+  --graph-grid: rgba(167, 217, 222, 0.12);
+  --graph-axis: rgba(238, 246, 255, 0.34);
+  --graph-text: #a8bac8;
+}
+
+.canvas-shell,
+.hero-canvas-wrap,
+.mini-canvas-shell {
+  background: var(--graph-bg);
+}
+
+
+.back-row {
+  padding: 18px 0 0;
+}
+
+.back-link {
+  justify-content: center;
+  min-height: 38px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  box-shadow: 0 8px 22px rgba(38, 70, 121, 0.08);
+  transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease, color 160ms ease;
+}
+
+.back-link:hover,
+.back-link:focus-visible {
+  box-shadow: 0 12px 30px rgba(38, 70, 121, 0.14);
+}
+
+:root[data-theme="dark"] .back-link {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--mirea-light);
+  border-color: rgba(167, 217, 222, 0.22);
+}
+
+.theme-toggle {
+  width: 132px;
+  min-width: 132px;
+  height: 38px;
+  padding: 0 10px;
+  justify-content: space-between;
+  gap: 8px;
+  font-weight: 900;
+  font-size: 0.86rem;
+}
+
+.theme-toggle-track {
+  position: relative;
+  width: 38px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--soft-blue);
+  flex: 0 0 38px;
+  transition: background-color 180ms ease;
+}
+
+.theme-toggle-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--mirea-blue);
+  transition: transform 220ms cubic-bezier(.2,.8,.2,1), background-color 180ms ease;
+}
+
+:root[data-theme="dark"] .theme-toggle-track {
+  background: rgba(95, 193, 207, 0.2);
+}
+
+:root[data-theme="dark"] .theme-toggle-thumb {
+  transform: translateX(18px);
+  background: var(--mirea-cyan);
+}
+
+.theme-toggle:hover,
+.theme-toggle:focus-visible {
+  box-shadow: 0 10px 24px rgba(38, 70, 121, 0.12);
+}
+
+:root[data-theme="dark"] input,
+:root[data-theme="dark"] select,
+:root[data-theme="dark"] textarea {
+  background: rgba(255, 255, 255, 0.06);
+  color: #eef6ff;
+  border-color: rgba(167, 217, 222, 0.24);
+}
+
+:root[data-theme="dark"] input:focus,
+:root[data-theme="dark"] select:focus,
+:root[data-theme="dark"] textarea:focus {
+  outline: 2px solid rgba(95, 193, 207, 0.35);
+  border-color: rgba(95, 193, 207, 0.68);
+}
+
+:root[data-theme="dark"] input::placeholder,
+:root[data-theme="dark"] textarea::placeholder {
+  color: rgba(238, 246, 255, 0.46);
+}
+
+:root[data-theme="dark"] select option {
+  background: #101a2b;
+  color: #eef6ff;
+}
+
+:root[data-theme="dark"] .answer {
+  background: rgba(255, 255, 255, 0.055);
+  color: #eef6ff;
+  border-color: rgba(167, 217, 222, 0.22);
+}
+
+:root[data-theme="dark"] .answer:hover,
+:root[data-theme="dark"] .answer.selected {
+  background: rgba(95, 193, 207, 0.12);
+  border-color: rgba(95, 193, 207, 0.48);
+}
+
+:root[data-theme="dark"] .answer.correct {
+  color: #bff5df;
+  background: rgba(28, 143, 114, 0.16);
+  border-color: rgba(28, 143, 114, 0.48);
+}
+
+:root[data-theme="dark"] .answer.wrong {
+  color: #ffd1cf;
+  background: rgba(204, 83, 78, 0.16);
+  border-color: rgba(204, 83, 78, 0.48);
+}
+
+:root[data-theme="dark"] .answer input {
+  accent-color: var(--mirea-cyan);
+}
+
+:root[data-theme="dark"] .quiz-result {
+  background: rgba(255, 255, 255, 0.045);
+  color: #c9d8e6;
+  border-color: rgba(167, 217, 222, 0.2);
+}
+
+:root[data-theme="dark"] .quiz-result.success {
+  color: #bff5df;
+  background: rgba(28, 143, 114, 0.16);
+  border-color: rgba(28, 143, 114, 0.35);
+}
+
+:root[data-theme="dark"] .quiz-result.warning,
+:root[data-theme="dark"] .quiz-result.bad {
+  color: #ffd1cf;
+  background: rgba(204, 83, 78, 0.16);
+  border-color: rgba(204, 83, 78, 0.35);
+}
+
+.topic-visual {
+  border-radius: 10px;
+}
+
+.topic-visual * {
+  transition: fill 180ms ease, stroke 180ms ease;
+}
+
+.footer {
+  padding: 48px 0 26px;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(95, 193, 207, 0.35), transparent 32%),
+    linear-gradient(135deg, #253f75 0%, #355ca8 48%, #3772b3 72%, #5fc1cf 140%);
+  color: rgba(255, 255, 255, 0.86);
+}
+
+:root[data-theme="dark"] .footer {
+  background:
+    radial-gradient(circle at 20% 0%, rgba(95, 193, 207, 0.26), transparent 34%),
+    linear-gradient(135deg, #08111f 0%, #12284b 42%, #355ca8 95%);
+}
+
+.footer a {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.footer a:hover,
+.footer a:focus-visible {
+  color: #ffffff;
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.guide-shell {
+  display: grid;
+  grid-template-columns: minmax(230px, 0.76fr) 1.24fr;
+  gap: 18px;
+  align-items: stretch;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line);
+  background: var(--paper);
+  box-shadow: var(--shadow);
+  padding: 18px;
+}
+
+.guide-tabs {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+}
+
+.guide-step {
+  display: grid;
+  grid-template-columns: 38px 1fr;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  min-height: 62px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--soft);
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+  opacity: 0;
+  transform: translateX(24px);
+  animation: guideSlideFromRight 450ms ease forwards;
+}
+
+.guide-step:hover,
+.guide-step:focus-visible {
+  border-color: rgba(95, 193, 207, 0.56);
+  background: var(--soft-blue);
+  outline: none;
+}
+
+.guide-step.active {
+  background: linear-gradient(135deg, rgba(53, 92, 168, 0.14), rgba(95, 193, 207, 0.16));
+  border-color: rgba(95, 193, 207, 0.72);
+  box-shadow: 0 12px 26px rgba(38, 70, 121, 0.12);
+}
+
+.guide-step strong {
+  display: block;
+  color: var(--mirea-blue);
+}
+
+.guide-step-text {
+  display: block;
+  min-width: 0;
+}
+
+.guide-step-text > span {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.guide-icon {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--soft-blue);
+  border: 1px solid var(--line);
+}
+
+.guide-icon svg {
+  width: 22px;
+  height: 22px;
+  display: block;
+  flex-shrink: 0;
+  overflow: visible;
+  fill: none;
+  stroke: var(--mirea-blue);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.guide-detail {
+  min-height: 278px;
+  display: grid;
+  align-content: center;
+  gap: 14px;
+  padding: 24px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background:
+    radial-gradient(circle at 90% 12%, rgba(95, 193, 207, 0.16), transparent 30%),
+    var(--soft);
+}
+
+.guide-detail.is-changing {
+  animation: guideSlideFromRight 450ms ease both;
+}
+
+.guide-step:nth-child(2) {
+  animation-delay: 45ms;
+}
+
+.guide-step:nth-child(3) {
+  animation-delay: 90ms;
+}
+
+.guide-step:nth-child(4) {
+  animation-delay: 135ms;
+}
+
+@keyframes guideSlideFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.guide-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.guide-dots {
+  display: inline-flex;
+  gap: 6px;
+}
+
+.guide-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--line);
+}
+
+.guide-dot.active {
+  width: 22px;
+  background: var(--mirea-cyan);
+}
+
+.guide-detail h3 {
+  margin: 0;
+  color: var(--mirea-blue);
+  font-size: clamp(24px, 3vw, 32px);
+}
+
+.guide-detail p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.62;
+  font-size: 16px;
+}
+
+.guide-detail .button {
+  width: fit-content;
+}
+
+:root[data-theme="dark"] .guide-shell,
+:root[data-theme="dark"] .guide-detail {
+  background: rgba(16, 26, 43, 0.96);
+  border-color: rgba(167, 217, 222, 0.18);
+}
+
+:root[data-theme="dark"] .guide-step {
+  background: rgba(255, 255, 255, 0.045);
+  color: #eef6ff;
+  border-color: rgba(167, 217, 222, 0.2);
+}
+
+:root[data-theme="dark"] .guide-step:hover,
+:root[data-theme="dark"] .guide-step:focus-visible,
+:root[data-theme="dark"] .guide-step.active {
+  background: rgba(95, 193, 207, 0.12);
+  border-color: rgba(95, 193, 207, 0.5);
+}
+
+:root[data-theme="dark"] .guide-step strong,
+:root[data-theme="dark"] .guide-detail h3,
+:root[data-theme="dark"] .guide-icon svg {
+  color: var(--mirea-light);
+  stroke: var(--mirea-cyan);
+}
+
+:root[data-theme="dark"] .guide-icon {
+  background: rgba(95, 193, 207, 0.12);
+  border-color: rgba(167, 217, 222, 0.2);
+}
+
+@media (max-width: 780px) {
+  .guide-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .guide-detail {
+    min-height: 220px;
+  }
+}
+
+@media (max-width: 980px) {
+  .nav-actions {
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .service-map-wrap {
+    min-height: 300px;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 980px) {
+  .navbar,
+  .hero,
+  .visual-layout,
+  .quiz-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .navbar {
+    align-items: flex-start;
+  }
+
+  .concept-grid,
+  .module-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .catalog-controls {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .route-card {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .container {
+    width: min(var(--container), calc(100% - 22px));
+  }
+
+  .hero {
+    padding: 22px;
+  }
+
+  .hero h1 {
+    font-size: 34px;
+  }
+
+  .concept-grid,
+  .controls,
+  .metric-row,
+  .status-grid,
+  .module-grid,
+  .catalog-controls,
+  .feature-list {
+    grid-template-columns: 1fr;
+  }
+
+  .canvas-shell {
+    height: 320px;
+  }
+
+  .hero-tool {
+    min-height: 340px;
+  }
+
+  .hero-canvas-wrap {
+    min-height: 190px;
+  }
+}
+
+/* UX navigation additions */
+.nav-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper);
+  color: var(--mirea-blue);
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.nav-toggle:hover,
+.nav-toggle:focus-visible {
+  background: var(--soft-blue);
+  border-color: rgba(95, 193, 207, 0.56);
+  outline: none;
+}
+
+.nav-toggle-bar,
+.nav-toggle-bar::before,
+.nav-toggle-bar::after {
+  display: block;
+  width: 18px;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+  transition: transform 0.2s ease, opacity 0.2s ease, background 0.2s ease;
+}
+
+.nav-toggle-bar {
+  position: relative;
+}
+
+.nav-toggle-bar::before,
+.nav-toggle-bar::after {
+  content: "";
+  position: absolute;
+  left: 0;
+}
+
+.nav-toggle-bar::before {
+  transform: translateY(-6px);
+}
+
+.nav-toggle-bar::after {
+  transform: translateY(6px);
+}
+
+.site-header.nav-open .nav-toggle-bar {
+  background: transparent;
+}
+
+.site-header.nav-open .nav-toggle-bar::before {
+  transform: rotate(45deg);
+}
+
+.site-header.nav-open .nav-toggle-bar::after {
+  transform: rotate(-45deg);
+}
+
+.topic-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.topic-position {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--soft-blue);
+  color: var(--mirea-blue);
+  font-weight: 800;
+}
+
+.route-card-body {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.route-module-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.route-module-list a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--soft-blue);
+  color: var(--mirea-blue);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.route-module-list a:hover,
+.route-module-list a:focus-visible {
+  border-color: rgba(95, 193, 207, 0.66);
+  background: rgba(95, 193, 207, 0.16);
+  outline: none;
+}
+
+@media (max-width: 860px) {
+  .navbar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px 10px;
+    min-height: 0;
+  }
+
+  .brand {
+    min-width: 0;
+    flex: initial;
+  }
+
+  .brand-meta {
+    min-width: 0;
+  }
+
+  .brand-meta strong {
+    font-size: 18px;
+  }
+
+  .brand-meta span {
+    font-size: 12px;
+    overflow-wrap: anywhere;
+  }
+
+  .nav-toggle {
+    display: inline-flex;
+    justify-self: end;
+  }
+
+  .theme-toggle {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: start;
+    min-height: 40px;
+  }
+
+  .nav-links {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    display: grid;
+    width: 100%;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    flex: none;
+    justify-content: stretch;
+    gap: 4px;
+    padding: 0;
+    border-top: 1px solid transparent;
+    transition: max-height 0.24s ease, opacity 0.18s ease, padding 0.18s ease, border-color 0.18s ease;
+  }
+
+  .site-header.nav-open .nav-links {
+    max-height: 420px;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    padding: 8px 0 4px;
+    border-top-color: var(--line);
+  }
+
+  .nav-links a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 10px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    width: min(var(--container), calc(100% - 20px));
+  }
+
+  .topic-nav {
+    gap: 8px;
+  }
+
+  .topic-nav .back-link,
+  .topic-position {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+}
+
+  </style>
+</head>
+<body id="top">
+  <!-- Главная страница объединяет локальные HTML-модули в единый офлайн-сервис. -->
+  <header class="site-header">
+    <div class="container navbar">
+      <a class="brand" href="#top">
+<span class="brand-meta">
+          <strong>РТУ МИРЭА</strong>
+          <span>Кафедра ВМ-3 · Интерактивные математические модели</span>
+        </span>
+      </a>
+      <button class="nav-toggle" id="navToggle" type="button" aria-label="Открыть меню" aria-expanded="false" aria-controls="primaryNav"><span class="nav-toggle-bar" aria-hidden="true"></span></button>
+      <nav class="nav-links" id="primaryNav" aria-label="Навигация по сервису">
+        <a href="#catalog">Каталог</a>
+        <a href="#route">Маршрут</a>
+        <a href="#teacher">Преподавателю</a>
+        <a href="#student">Студенту</a>
+        <a href="#summary">О сервисе</a>
+      </nav>
+          <button class="theme-toggle" id="themeToggle" type="button" aria-label="Переключить тему" aria-pressed="false">
+        <span class="theme-toggle-track" aria-hidden="true">
+          <span class="theme-toggle-thumb"></span>
+        </span>
+        <span class="theme-toggle-text">Светлая</span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero-band">
+      <div class="container hero">
+        <div>
+          <span class="department-chip">РТУ МИРЭА · ВМ-3</span>
+          <h1>Интерактивные математические модели</h1>
+          <p>Единый офлайн-сервис для изучения ключевых математических тем. Выберите модуль в каталоге или идите по маршруту: теория, интерактивная модель, визуализация, шаги и мини-тренажер собраны в каждом автономном HTML-файле.</p>
+          <div class="hero-actions">
+            <a class="button light" href="#catalog">Открыть каталог</a>
+            <a class="button route" href="#route">Посмотреть маршрут изучения →</a>
+          </div>
+        </div>
+        <aside class="hero-tool" aria-label="Карта образовательного сервиса">
+          <div class="tool-head">
+            <div>
+              <strong>Карта сервиса</strong>
+              <span>Разделы математики и связанные модули</span>
+            </div>
+            <span class="tag">13 тем</span>
+          </div>
+          <div class="hero-canvas-wrap service-map-wrap">
+            <canvas id="platformCanvas"></canvas>
+          </div>
+          <div class="metric-row">
+            <div class="metric"><strong>13 модулей</strong><span>от матриц до дифференциальных уравнений</span></div>
+            <div class="metric"><strong>100% офлайн</strong><span>работает без интернета и сервера</span></div>
+            <div class="metric"><strong>HTML/CSS/JS</strong><span>без библиотек и зависимостей</span></div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="concept-grid">
+          <article class="concept-card"><h3>13 тем</h3><p>Полный набор интерактивных моделей.</p></article>
+          <article class="concept-card"><h3>5 разделов</h3><p>Алгебра, геометрия, анализ, вероятность, дифференциальные уравнения.</p></article>
+          <article class="concept-card"><h3>0 зависимостей</h3><p>Все работает в браузере без установки.</p></article>
+          <article class="concept-card"><h3>1 файл на модуль</h3><p>Каждый проект автономен и переносим.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section soft" id="catalog">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">Каталог</span>
+          <h2>Выбор интерактивного модуля</h2>
+          <p>Найдите тему по названию, разделу, описанию или тегам. Ссылки ведут на соседние автономные HTML-проекты и работают при запуске из файловой системы.</p>
+        </div>
+        <div class="catalog-controls">
+          <div class="control"><label for="searchInput">Поиск</label><input id="searchInput" type="search" placeholder="Например: Байес, векторы, производная"></div>
+          <div class="control"><label for="categoryFilter">Раздел</label><select id="categoryFilter"></select></div>
+          <div class="control"><label for="levelFilter">Уровень</label><select id="levelFilter"></select></div>
+          <button class="button" id="resetFilters" type="button">Сбросить фильтры</button>
+        </div>
+        <div class="definition" style="margin-bottom:16px"><strong id="resultCounter">Найдено: 13 из 13</strong></div>
+        <div class="module-grid" id="moduleGrid"></div>
+      </div>
+    </section>
+
+    <section class="section" id="route">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">Маршрут</span>
+          <h2>Рекомендуемый маршрут изучения</h2>
+          <p>Модули можно проходить отдельно, но последовательность ниже помогает связать темы в единый курс.</p>
+        </div>
+        <div class="timeline" id="routeTimeline"></div>
+      </div>
+    </section>
+
+    <section class="section soft" id="teacher">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">Преподавателю</span>
+          <h2>Как использовать на лекции</h2>
+          <p>Выберите шаг сценария: справа появится подробная подсказка для демонстрации, разбора алгоритма или самопроверки.</p>
+        </div>
+        <div class="guide-shell" data-guide="teacher">
+          <div class="guide-tabs" id="teacherGuideTabs" aria-label="Как использовать на лекции"></div>
+          <article class="guide-detail" id="teacherGuideDetail" aria-live="polite"></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="student">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">Студенту</span>
+          <h2>Как заниматься самостоятельно</h2>
+          <p>Интерактивный маршрут помогает идти от короткой теории к модели, пошаговому разбору и проверке понимания.</p>
+        </div>
+        <div class="guide-shell" data-guide="student">
+          <div class="guide-tabs" id="studentGuideTabs" aria-label="Как заниматься самостоятельно"></div>
+          <article class="guide-detail" id="studentGuideDetail" aria-live="polite"></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section soft" id="summary">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">Что запомнить</span>
+          <h2>О сервисе</h2>
+          <p>Этот сервис объединяет 13 интерактивных математических моделей. Каждая тема может изучаться отдельно, но вместе они образуют связанный маршрут: от линейной алгебры и аналитической геометрии к математическому анализу, вероятностным моделям и дифференциальным уравнениям.</p>
+        </div>
+        <div class="concept-grid">
+          <article class="concept-card"><h3>Все модули автономны</h3><p>Каждый раздел открывается отдельным index.html.</p></article>
+          <article class="concept-card"><h3>Все работает офлайн</h3><p>Не нужны сервер, интернет и внешние библиотеки.</p></article>
+          <article class="concept-card"><h3>Сервис подходит для лекции</h3><p>Модули можно показывать на проекторе и использовать для самостоятельной работы.</p></article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <strong>РТУ МИРЭА</strong>
+        <span>Кафедра ВМ-3</span>
+        <p>Интерактивные математические модели: единый офлайн-сервис для выбора темы, маршрута изучения и перехода к автономным учебным модулям.</p>
+      </div>
+      <div class="footer-column">
+        <strong>Навигация</strong>
+        <a href="#catalog">Каталог</a>
+        <a href="#route">Маршрут</a>
+        <a href="#teacher">Преподавателю</a>
+        <a href="#student">Студенту</a>
+      </div>
+      <div class="footer-column">
+        <strong>Формат</strong>
+        <span>13 учебных модулей</span>
+        <span>1 образовательный сервис</span>
+        <span>HTML/CSS/JS без зависимостей</span>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <span>Интерактивные математические модели · РТУ МИРЭА · ВМ-3</span>
+    </div>
+  </footer>
+
+  <script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // Данные каталога хранятся прямо в HTML, чтобы сервис работал полностью офлайн.
+    const modules = [
+      { id: 1, title: "Определители матриц третьего порядка", folder: "../01-determinants-3x3/index.html", category: "Линейная алгебра", level: "Базовый", description: "Правило Саррюса, разложение по строке или столбцу и треугольный метод.", tags: ["матрицы", "определитель", "Саррюс"] },
+      { id: 2, title: "Три способа решения систем линейных уравнений", folder: "../02-linear-systems/index.html", category: "Линейная алгебра", level: "Базовый", description: "Метод подстановки, метод сложения, метод Крамера и геометрический смысл.", tags: ["системы", "Крамер", "прямые"] },
+      { id: 3, title: "Операции с векторами", folder: "../03-vector-operations/index.html", category: "Аналитическая геометрия", level: "Базовый", description: "Сложение, вычитание, скалярное, векторное и смешанное произведение.", tags: ["векторы", "произведение", "угол"] },
+      { id: 4, title: "Уравнения прямой на плоскости", folder: "../04-line-equations/index.html", category: "Аналитическая геометрия", level: "Базовый", description: "Общее уравнение, угловой коэффициент, точка и вектор, две точки.", tags: ["прямая", "координаты", "график"] },
+      { id: 5, title: "Кривые второго порядка", folder: "../05-conic-sections/index.html", category: "Аналитическая геометрия", level: "Средний", description: "Окружность, эллипс, гипербола, парабола и приведение к каноническому виду.", tags: ["коники", "канонический вид", "кривая"] },
+      { id: 6, title: "Поверхности второго порядка", folder: "../06-quadratic-surfaces/index.html", category: "Аналитическая геометрия", level: "Средний", description: "Канонические поверхности и псевдо-3D каркасные чертежи.", tags: ["поверхности", "3D", "сечения"] },
+      { id: 7, title: "Применение производной", folder: "../07-derivative-applications/index.html", category: "Математический анализ", level: "Базовый", description: "Касательная, скорость изменения, экстремумы и оптимизация.", tags: ["производная", "касательная", "экстремум"] },
+      { id: 8, title: "Градиент и градиентный спуск", folder: "../08-gradient-descent/index.html", category: "Математический анализ", level: "Средний", description: "Градиент функции нескольких переменных и траектория спуска к минимуму.", tags: ["градиент", "оптимизация", "ИТ"] },
+      { id: 9, title: "Вероятностные модели", folder: "../09-probability-models/index.html", category: "Теория вероятностей", level: "Базовый", description: "Монеты, кубики, лотерея, частоты и экспериментальная вероятность.", tags: ["вероятность", "кубики", "монеты"] },
+      { id: 10, title: "Полная вероятность и формула Байеса", folder: "../10-total-probability-bayes/index.html", category: "Теория вероятностей", level: "Средний", description: "Дерево вероятностей, гипотезы и пересчет вероятностей после события.", tags: ["Байес", "гипотезы", "дерево"] },
+      { id: 11, title: "Формула Байеса в ИТ", folder: "../11-bayes-it-application/index.html", category: "Теория вероятностей", level: "Средний", description: "Спам-фильтр, мошеннические транзакции и диагностика ошибок сервера.", tags: ["ИТ", "спам", "классификация"] },
+      { id: 12, title: "Ряды Тейлора", folder: "../12-taylor-series/index.html", category: "Математический анализ", level: "Средний", description: "Приближение функций многочленами и применение в инженерных вычислениях.", tags: ["Тейлор", "приближение", "вычисления"] },
+      { id: 13, title: "Поле направлений и изоклины", folder: "../13-direction-fields/index.html", category: "Дифференциальные уравнения", level: "Средний", description: "Геометрический смысл y' = f(x, y), поле направлений и метод Эйлера.", tags: ["ДУ", "Эйлер", "изоклины"] }
+    ];
+
+    function updateThemeButton(theme) {
+      const button = document.getElementById("themeToggle");
+      if (!button) return;
+      const icon = button.querySelector(".theme-toggle-icon");
+      const text = button.querySelector(".theme-toggle-text");
+      if (icon) icon.textContent = theme === "dark" ? "☾" : "☀";
+      if (text) text.textContent = theme === "dark" ? "Темная" : "Светлая";
+      button.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
+    }
+
+    function applyTheme(theme, silent) {
+      const normalized = theme === "dark" ? "dark" : "light";
+      document.documentElement.setAttribute("data-theme", normalized);
+      try {
+        localStorage.setItem("mireaTheme", normalized);
+      } catch (error) {
+        // localStorage может быть недоступен в очень строгих настройках браузера.
+      }
+      updateThemeButton(normalized);
+      if (!silent) {
+        try {
+          window.dispatchEvent(new Event("mirea-theme-change"));
+        } catch (error) {
+          // Старые браузеры просто не выполнят дополнительную перерисовку.
+        }
+      }
+    }
+
+    function initTheme() {
+      let savedTheme = "light";
+      try {
+        savedTheme = localStorage.getItem("mireaTheme") || "light";
+      } catch (error) {
+        savedTheme = "light";
+      }
+      applyTheme(savedTheme, true);
+      const button = document.getElementById("themeToggle");
+      if (button) button.addEventListener("click", toggleTheme);
+    }
+
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute("data-theme") || "light";
+      applyTheme(currentTheme === "dark" ? "light" : "dark");
+    }
+
+    
+    function initMobileNav() {
+      const header = document.querySelector(".site-header");
+      const toggle = document.getElementById("navToggle");
+      const nav = document.getElementById("primaryNav");
+      if (!header || !toggle || !nav) return;
+
+      function setOpen(open) {
+        header.classList.toggle("nav-open", open);
+        toggle.setAttribute("aria-expanded", open ? "true" : "false");
+        toggle.setAttribute("aria-label", open ? "Закрыть меню" : "Открыть меню");
+      }
+
+      toggle.addEventListener("click", function () {
+        setOpen(!header.classList.contains("nav-open"));
+      });
+      nav.querySelectorAll("a").forEach(function (link) {
+        link.addEventListener("click", function () { setOpen(false); });
+      });
+      window.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") setOpen(false);
+      });
+      window.addEventListener("resize", function () {
+        if (window.innerWidth > 860) setOpen(false);
+      });
+    }
+function getThemePalette() {
+      const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+      return {
+        isDark: isDark,
+        canvasBg: isDark ? "#0b1422" : "#ffffff",
+        panelBg: isDark ? "rgba(16, 26, 43, 0.96)" : "#ffffff",
+        softBg: isDark ? "rgba(95, 193, 207, 0.11)" : "#f8fbff",
+        grid: isDark ? "rgba(167, 217, 222, 0.11)" : "#e7edf5",
+        line: isDark ? "rgba(167, 217, 222, 0.24)" : "rgba(53, 92, 168, 0.22)",
+        border: isDark ? "rgba(167, 217, 222, 0.2)" : "#d7e0ea",
+        text: isDark ? "#eef6ff" : "#355ca8",
+        muted: isDark ? "#a8bac8" : "#6e7b80"
+      };
+    }
+
+    function setupCanvas(canvas) {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.max(1, Math.round(rect.width * dpr));
+      canvas.height = Math.max(1, Math.round(rect.height * dpr));
+      const ctx = canvas.getContext("2d");
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      return { ctx, width: rect.width, height: rect.height };
+    }
+
+    function setText(id, value) {
+      const element = document.getElementById(id);
+      if (element) element.textContent = String(value);
+    }
+
+    function roundedRect(ctx, x, y, width, height, radius) {
+      const r = Math.min(radius, width / 2, height / 2);
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + width - r, y);
+      ctx.quadraticCurveTo(x + width, y, x + width, y + r);
+      ctx.lineTo(x + width, y + height - r);
+      ctx.quadraticCurveTo(x + width, y + height, x + width - r, y + height);
+      ctx.lineTo(x + r, y + height);
+      ctx.quadraticCurveTo(x, y + height, x, y + height - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+    }
+
+    function drawPlatformMap(activeCategory) {
+      const canvas = document.getElementById("platformCanvas");
+      if (!canvas) return;
+      const setup = setupCanvas(canvas);
+      const ctx = setup.ctx;
+      const width = setup.width;
+      const height = setup.height;
+      const palette = getThemePalette();
+      const compact = width < 560;
+      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = palette.canvasBg;
+      ctx.fillRect(0, 0, width, height);
+      ctx.strokeStyle = palette.grid;
+      ctx.lineWidth = 1;
+      const gridStep = compact ? 22 : 24;
+      for (let x = 0; x <= width; x += gridStep) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+        ctx.stroke();
+      }
+      for (let y = 0; y <= height; y += gridStep) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
+      }
+
+      const center = { x: width / 2, y: height * (compact ? 0.53 : 0.52) };
+      const centerRadius = compact ? 42 : 50;
+      const cardW = Math.max(122, Math.min(compact ? 150 : 168, width * (compact ? 0.3 : 0.28)));
+      const cardH = compact ? 54 : 58;
+      const sidePad = compact ? 14 : 24;
+      const topY = compact ? 44 : 48;
+      const upperY = compact ? 112 : 112;
+      const lowerY = height - (compact ? 58 : 64);
+      const cards = [
+        { name: "Дифференциальные уравнения", lines: ["Дифференциальные", "уравнения"], x: width / 2, y: topY, count: 1 },
+        { name: "Линейная алгебра", lines: ["Линейная", "алгебра"], x: sidePad + cardW / 2, y: upperY, count: 2 },
+        { name: "Аналитическая геометрия", lines: ["Аналитическая", "геометрия"], x: width - sidePad - cardW / 2, y: upperY, count: 4 },
+        { name: "Теория вероятностей", lines: ["Теория", "вероятностей"], x: sidePad + cardW / 2, y: lowerY, count: 3 },
+        { name: "Математический анализ", lines: ["Математический", "анализ"], x: width - sidePad - cardW / 2, y: lowerY, count: 3 }
+      ];
+
+      ctx.strokeStyle = palette.line;
+      ctx.lineWidth = 1.6;
+      cards.forEach(function (card) {
+        ctx.beginPath();
+        ctx.moveTo(center.x, center.y);
+        ctx.lineTo(card.x, card.y);
+        ctx.stroke();
+      });
+
+      cards.forEach(function (card) {
+        const active = activeCategory === card.name;
+        const x = card.x - cardW / 2;
+        const y = card.y - cardH / 2;
+        ctx.save();
+        ctx.shadowColor = palette.isDark ? "rgba(0, 0, 0, 0.36)" : "rgba(38, 70, 121, 0.12)";
+        ctx.shadowBlur = active ? 18 : 10;
+        ctx.shadowOffsetY = active ? 8 : 5;
+        roundedRect(ctx, x, y, cardW, cardH, 10);
+        ctx.fillStyle = active ? (palette.isDark ? "rgba(95, 193, 207, 0.18)" : "#eaf8fb") : palette.panelBg;
+        ctx.fill();
+        ctx.restore();
+        roundedRect(ctx, x, y, cardW, cardH, 10);
+        ctx.strokeStyle = active ? "#5fc1cf" : palette.border;
+        ctx.lineWidth = active ? 2 : 1.2;
+        ctx.stroke();
+        ctx.fillStyle = palette.text;
+        ctx.font = "700 12px Helvetica, Arial";
+        ctx.textAlign = "center";
+        ctx.fillText(card.lines[0], card.x, card.y - 10);
+        ctx.fillText(card.lines[1], card.x, card.y + 5);
+        ctx.fillStyle = palette.muted;
+        ctx.font = "11px Helvetica, Arial";
+        ctx.fillText(card.count + " мод.", card.x, card.y + 21);
+        const startX = card.x - (card.count - 1) * 7;
+        for (let i = 0; i < card.count; i += 1) {
+          ctx.fillStyle = active ? "#cc534e" : "#5fc1cf";
+          ctx.beginPath();
+          ctx.arc(startX + i * 14, y + cardH + 9, 3.6, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      });
+
+      const gradient = ctx.createLinearGradient(center.x - centerRadius, center.y - centerRadius, center.x + centerRadius, center.y + centerRadius);
+      gradient.addColorStop(0, "#355ca8");
+      gradient.addColorStop(1, "#3772b3");
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.arc(center.x, center.y, centerRadius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.38)";
+      ctx.lineWidth = 1.4;
+      ctx.stroke();
+      ctx.fillStyle = "#ffffff";
+      ctx.font = compact ? "700 12px Helvetica, Arial" : "700 13px Helvetica, Arial";
+      ctx.textAlign = "center";
+      ctx.fillText("Математические", center.x, center.y - 6);
+      ctx.fillText("модели", center.x, center.y + 12);
+      ctx.textAlign = "left";
+    }
+
+    function fillFilters() {
+      const categories = ["Все разделы"].concat(Array.from(new Set(modules.map(function (item) { return item.category; }))));
+      const levels = ["Все уровни"].concat(Array.from(new Set(modules.map(function (item) { return item.level; }))));
+      const categoryFilter = document.getElementById("categoryFilter");
+      const levelFilter = document.getElementById("levelFilter");
+      categoryFilter.textContent = "";
+      levelFilter.textContent = "";
+      categories.forEach(function (item) {
+        const option = document.createElement("option");
+        option.value = item;
+        option.textContent = item;
+        categoryFilter.appendChild(option);
+      });
+      levels.forEach(function (item) {
+        const option = document.createElement("option");
+        option.value = item;
+        option.textContent = item;
+        levelFilter.appendChild(option);
+      });
+    }
+
+    function moduleIcon(module) {
+      const ns = "http://www.w3.org/2000/svg";
+      const svg = document.createElementNS(ns, "svg");
+      svg.setAttribute("class", "topic-visual");
+      svg.setAttribute("viewBox", "0 0 112 64");
+      svg.setAttribute("aria-hidden", "true");
+
+      function mapPaint(value, key) {
+        if (!value || value === "none") return value;
+        const map = {
+          "#ffffff": key === "fill" ? "var(--graph-soft)" : "var(--line)",
+          "#f8fbff": "var(--graph-bg)",
+          "#f5f8fb": "var(--graph-soft)",
+          "#e7edf5": "var(--graph-grid)",
+          "#d7e0ea": "var(--line)",
+          "#b8c6d8": "var(--graph-axis)",
+          "#355ca8": "var(--mirea-blue)",
+          "#5fc1cf": "var(--mirea-cyan)",
+          "#a7d9de": "var(--mirea-light)",
+          "#1c8f72": "var(--success)",
+          "#cc534e": "var(--warning)"
+        };
+        return map[value] || value;
+      }
+
+      function add(name, attrs) {
+        const node = document.createElementNS(ns, name);
+        Object.keys(attrs).forEach(function (key) {
+          const value = key === "fill" || key === "stroke" ? mapPaint(attrs[key], key) : attrs[key];
+          node.setAttribute(key, value);
+        });
+        svg.appendChild(node);
+        return node;
+      }
+      function line(x1, y1, x2, y2, color, width) {
+        add("line", { x1: x1, y1: y1, x2: x2, y2: y2, stroke: color, "stroke-width": width || 2, "stroke-linecap": "round" });
+      }
+      function path(d, color, width) {
+        add("path", { d: d, fill: "none", stroke: color, "stroke-width": width || 2.5, "stroke-linecap": "round", "stroke-linejoin": "round" });
+      }
+      function circle(cx, cy, r, color, fill) {
+        add("circle", { cx: cx, cy: cy, r: r, fill: fill || "#ffffff", stroke: color, "stroke-width": 2 });
+      }
+      function grid() {
+        for (let x = 16; x <= 96; x += 16) line(x, 12, x, 54, "#e7edf5", 1);
+        for (let y = 16; y <= 52; y += 12) line(10, y, 102, y, "#e7edf5", 1);
+      }
+
+      add("rect", { x: 1, y: 1, width: 110, height: 62, rx: 10, fill: "#f8fbff", stroke: "#d7e0ea" });
+
+      switch (module.id) {
+        case 1:
+          for (let r = 0; r < 3; r += 1) for (let c = 0; c < 3; c += 1) add("rect", { x: 22 + c * 16, y: 12 + r * 13, width: 13, height: 10, rx: 2, fill: "#ffffff", stroke: "#d7e0ea" });
+          path("M27 17 L59 43 M43 17 L75 43", "#355ca8", 2);
+          path("M75 17 L43 43", "#5fc1cf", 2);
+          break;
+        case 2:
+          grid();
+          line(14, 48, 98, 18, "#355ca8", 3);
+          line(16, 18, 96, 48, "#5fc1cf", 3);
+          circle(56, 33, 4, "#cc534e", "#cc534e");
+          break;
+        case 3:
+          line(20, 48, 54, 25, "#355ca8", 3);
+          line(20, 48, 70, 42, "#5fc1cf", 3);
+          line(20, 48, 86, 20, "#1c8f72", 3);
+          path("M54 25 L48 25 M54 25 L51 31", "#355ca8", 2);
+          path("M70 42 L64 38 M70 42 L64 46", "#5fc1cf", 2);
+          break;
+        case 4:
+          grid();
+          line(18, 38, 96, 23, "#355ca8", 3);
+          line(56, 14, 56, 54, "#b8c6d8", 1.5);
+          line(12, 38, 102, 38, "#b8c6d8", 1.5);
+          line(54, 38, 72, 32, "#5fc1cf", 2.5);
+          break;
+        case 5:
+          circle(42, 33, 16, "#355ca8", "none");
+          path("M58 33 C72 10 92 17 95 34 C90 53 70 54 58 33", "#5fc1cf", 2.5);
+          line(18, 33, 98, 33, "#d7e0ea", 1);
+          line(42, 12, 42, 54, "#d7e0ea", 1);
+          break;
+        case 6:
+          for (let i = 0; i < 4; i += 1) add("ellipse", { cx: 56, cy: 24 + i * 8, rx: 34 - i * 3, ry: 9, fill: "none", stroke: i % 2 ? "#5fc1cf" : "#355ca8", "stroke-width": 1.6 });
+          path("M25 24 C36 50 76 50 87 24", "#5fc1cf", 1.8);
+          path("M25 48 C36 16 76 16 87 48", "#355ca8", 1.8);
+          break;
+        case 7:
+          grid();
+          path("M16 48 C36 47 40 18 56 20 C72 22 74 46 96 24", "#355ca8", 2.8);
+          line(42, 35, 76, 20, "#5fc1cf", 2.4);
+          circle(58, 28, 3.5, "#cc534e", "#cc534e");
+          break;
+        case 8:
+          [22, 32, 42].forEach(function (r) { add("ellipse", { cx: 56, cy: 32, rx: r, ry: Math.round(r * 0.55), fill: "none", stroke: "#a7d9de", "stroke-width": 1.5 }); });
+          path("M87 19 L72 26 L62 31 L53 34 L48 35", "#cc534e", 3);
+          circle(46, 36, 3.5, "#1c8f72", "#1c8f72");
+          break;
+        case 9:
+          [18, 28, 40, 30, 46, 24].forEach(function (h, i) { add("rect", { x: 18 + i * 13, y: 52 - h, width: 8, height: h, rx: 2, fill: i % 2 ? "#5fc1cf" : "#355ca8" }); });
+          line(14, 52, 98, 52, "#b8c6d8", 1.5);
+          break;
+        case 10:
+          circle(20, 32, 4, "#355ca8", "#355ca8");
+          [18, 32, 46].forEach(function (y, i) { line(24, 32, 54, y, "#355ca8", 1.8); circle(58, y, 5, "#5fc1cf", "#ffffff"); line(63, y, 90, y - 6, "#5fc1cf", 1.8); circle(94, y - 6, 4, "#1c8f72", "#1c8f72"); });
+          break;
+        case 11:
+          for (let i = 0; i < 70; i += 1) add("rect", { x: 16 + (i % 14) * 6, y: 14 + Math.floor(i / 14) * 7, width: 4, height: 4, rx: 1, fill: i < 9 ? "#1c8f72" : i < 22 ? "#5fc1cf" : "#d7e0ea" });
+          path("M18 50 L96 18", "#355ca8", 2.2);
+          break;
+        case 12:
+          grid();
+          path("M14 34 C32 10 48 54 64 30 C76 13 87 20 98 33", "#355ca8", 2.8);
+          path("M15 35 C35 20 56 25 96 32", "#5fc1cf", 2.4);
+          break;
+        case 13:
+          grid();
+          for (let x = 22; x <= 90; x += 17) for (let y = 18; y <= 48; y += 10) line(x - 4, y + (x > 55 ? 2 : -2), x + 4, y + (x > 55 ? -2 : 2), "#355ca8", 1.7);
+          path("M18 48 C34 42 44 27 58 28 C72 29 82 20 96 16", "#cc534e", 2.4);
+          break;
+        default:
+          circle(32, 32, 12, "#355ca8", "none");
+          path("M54 38 C64 15 74 49 94 22", "#5fc1cf", 3);
+      }
+
+      return svg;
+    }
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    function createTextElement(tagName, className, text) {
+      const element = document.createElement(tagName);
+      if (className) element.className = className;
+      element.textContent = text;
+      return element;
+    }
+
+    function renderCatalog() {
+      const query = document.getElementById("searchInput").value.trim().toLowerCase();
+      const category = document.getElementById("categoryFilter").value;
+      const level = document.getElementById("levelFilter").value;
+      const filtered = modules.filter(function (module) {
+        const text = [module.title, module.description, module.category, module.level].concat(module.tags).join(" ").toLowerCase();
+        const queryOk = !query || text.includes(query);
+        const categoryOk = category === "Все разделы" || module.category === category;
+        const levelOk = level === "Все уровни" || module.level === level;
+        return queryOk && categoryOk && levelOk;
+      });
+      setText("resultCounter", "Найдено: " + filtered.length + " из " + modules.length);
+      const grid = document.getElementById("moduleGrid");
+      grid.textContent = "";
+      filtered.forEach(function (module) {
+        const card = document.createElement("article");
+        card.className = "module-card";
+        card.tabIndex = 0;
+
+        const top = document.createElement("div");
+        top.className = "module-card-top";
+        top.appendChild(createTextElement("span", "module-number", String(module.id).padStart(2, "0")));
+        top.appendChild(moduleIcon(module));
+        card.appendChild(top);
+
+        card.appendChild(createTextElement("div", "module-meta", module.category + " · " + module.level));
+        card.appendChild(createTextElement("h3", "", module.title));
+        card.appendChild(createTextElement("p", "", module.description));
+
+        const tags = document.createElement("div");
+        tags.className = "tag-list";
+        module.tags.forEach(function (tag) {
+          tags.appendChild(createTextElement("span", "tag", tag));
+        });
+        card.appendChild(tags);
+
+        const features = document.createElement("div");
+        features.className = "feature-list";
+        ["теория", "интерактивная модель", "пошаговый расчет", "тренажер"].forEach(function (feature) {
+          features.appendChild(createTextElement("span", "", feature));
+        });
+        card.appendChild(features);
+
+        const link = createTextElement("a", "button primary", "Открыть модуль");
+        link.href = module.folder;
+        card.appendChild(link);
+
+        card.addEventListener("click", function (event) {
+          if (event.target.tagName.toLowerCase() !== "a") window.location.href = module.folder;
+        });
+        card.addEventListener("keydown", function (event) {
+          if (event.key === "Enter" && card.classList.contains("module-card")) window.location.href = module.folder;
+        });
+        card.addEventListener("mouseenter", function () { drawPlatformMap(module.category); });
+        card.addEventListener("mouseleave", function () { drawPlatformMap(); });
+        grid.appendChild(card);
+      });
+    }
+
+    function renderRoute() {
+      const route = [
+        { title: "Линейная алгебра", text: "Начните с вычислительных основ: сначала определители, затем системы линейных уравнений.", ids: [1, 2], href: "../01-determinants-3x3/index.html" },
+        { title: "Аналитическая геометрия", text: "После алгебры переходите к объектам на плоскости и в пространстве: векторы, прямые, коники и поверхности.", ids: [3, 4, 5, 6], href: "../03-vector-operations/index.html" },
+        { title: "Математический анализ", text: "Производная задает локальное изменение; дальше идут градиент, оптимизация и приближения рядами Тейлора.", ids: [7, 8, 12], href: "../07-derivative-applications/index.html" },
+        { title: "Теория вероятностей", text: "От экспериментов и частот переходите к полной вероятности, формуле Байеса и ИТ-примеру классификации.", ids: [9, 10, 11], href: "../09-probability-models/index.html" },
+        { title: "Дифференциальные уравнения", text: "Завершите маршрут геометрическим чтением уравнения через поле направлений и изоклины.", ids: [13], href: "../13-direction-fields/index.html" }
+      ];
+      const timeline = document.getElementById("routeTimeline");
+      timeline.textContent = "";
+      route.forEach(function (item, index) {
+        const card = document.createElement("article");
+        card.className = "route-card";
+        card.appendChild(createTextElement("strong", "", (index + 1) + ". " + item.title));
+        const body = document.createElement("div");
+        body.className = "route-card-body";
+        body.appendChild(createTextElement("p", "", item.text));
+        const list = document.createElement("div");
+        list.className = "route-module-list";
+        item.ids.forEach(function (id) {
+          const module = modules.find(function (entry) { return entry.id === id; });
+          if (!module) return;
+          const moduleLink = createTextElement("a", "", String(module.id).padStart(2, "0") + ". " + module.title);
+          moduleLink.href = module.folder;
+          list.appendChild(moduleLink);
+        });
+        body.appendChild(list);
+        card.appendChild(body);
+        const link = createTextElement("a", "button", "Начать раздел");
+        link.href = item.href;
+        card.appendChild(link);
+        timeline.appendChild(card);
+      });
+    }
+
+    const guideData = {
+      teacher: [
+        { icon: "screen", title: "Быстрая демонстрация", short: "Показ модели", detail: "Откройте нужный модуль из каталога и покажите интерактивную модель на проекторе: меняйте параметры, чтобы студенты сразу видели связь формулы, графика и результата.", href: "#catalog", action: "Открыть каталог" },
+        { icon: "list", title: "Пошаговый разбор", short: "Алгоритм", detail: "Используйте блок «Шаги» в каждом модуле: он помогает разложить решение на понятные действия и удерживать темп объяснения на лекции.", href: "#route", action: "Посмотреть маршрут" },
+        { icon: "check", title: "Самопроверка", short: "Тренажер", detail: "В конце темы включите мини-тренажер. Он дает быстрый срез понимания и показывает короткое объяснение после ответа.", href: "#catalog", action: "Выбрать модуль" },
+        { icon: "offline", title: "Офлайн-режим", short: "Без сети", detail: "Все страницы открываются из локальной папки или с флешки. Это удобно для аудитории без стабильного интернета и для защиты проекта.", href: "#summary", action: "О формате" }
+      ],
+      student: [
+        { icon: "book", title: "Сначала теория", short: "Формулы", detail: "Начните с короткого теоретического блока: зафиксируйте определения, обозначения и условия применимости метода.", href: "#catalog", action: "Выбрать тему" },
+        { icon: "chart", title: "Затем модель", short: "Параметры", detail: "Меняйте коэффициенты, точки и режимы. Наблюдение за графиком помогает быстрее понять смысл вычислений.", href: "#catalog", action: "К каталогу" },
+        { icon: "steps", title: "Потом шаги", short: "Разбор", detail: "Сверяйте собственное решение с пошаговым алгоритмом: так легче найти место ошибки и понять, почему метод работает.", href: "#route", action: "Маршрут" },
+        { icon: "test", title: "В конце проверка", short: "Тест", detail: "Пройдите мини-тренажер. Если ответ неверный, прочитайте объяснение и вернитесь к модели с похожими параметрами.", href: "#catalog", action: "Начать практику" }
+      ]
+    };
+
+    const guideState = { teacher: 0, student: 0 };
+
+    function createGuideIcon(type) {
+      const ns = "http://www.w3.org/2000/svg";
+      const svg = document.createElementNS(ns, "svg");
+      svg.setAttribute("viewBox", "0 0 24 24");
+      svg.setAttribute("aria-hidden", "true");
+      function path(d) {
+        const node = document.createElementNS(ns, "path");
+        node.setAttribute("d", d);
+        svg.appendChild(node);
+      }
+      const icons = {
+        screen: ["M4 5h16v10H4z", "M8 19h8", "M12 15v4"],
+        list: ["M8 6h12", "M8 12h12", "M8 18h12", "M4 6h.01", "M4 12h.01", "M4 18h.01"],
+        check: ["M20 6 9 17l-5-5"],
+        offline: ["M5 17h14", "M8 17a4 4 0 0 1 7-3", "M3 8c4-4 14-4 18 0", "M7 11c3-2 7-2 10 0"],
+        book: ["M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21z", "M4 5.5v15"],
+        chart: ["M4 19V5", "M4 19h16", "M7 15l3-4 3 2 4-7"],
+        steps: ["M5 6h6", "M5 12h10", "M5 18h14", "M17 6h2"],
+        test: ["M9 11l2 2 4-5", "M5 4h14v16H5z"]
+      };
+      (icons[type] || icons.list).forEach(path);
+      return svg;
+    }
+
+    function renderGuideBlock(kind) {
+      const items = guideData[kind];
+      const tabs = document.getElementById(kind + "GuideTabs");
+      const detail = document.getElementById(kind + "GuideDetail");
+      if (!tabs || !detail || !items) return;
+      const activeIndex = guideState[kind] || 0;
+      tabs.textContent = "";
+      items.forEach(function (item, index) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "guide-step" + (index === activeIndex ? " active" : "");
+        button.appendChild(Object.assign(document.createElement("span"), { className: "guide-icon" }));
+        button.querySelector(".guide-icon").appendChild(createGuideIcon(item.icon));
+        const text = document.createElement("span");
+        text.className = "guide-step-text";
+        const strong = document.createElement("strong");
+        strong.textContent = item.title;
+        const small = document.createElement("span");
+        small.textContent = item.short;
+        text.appendChild(strong);
+        text.appendChild(small);
+        button.appendChild(text);
+        button.addEventListener("click", function () {
+          guideState[kind] = index;
+          renderGuideBlock(kind);
+        });
+        tabs.appendChild(button);
+      });
+      const active = items[activeIndex];
+      detail.classList.remove("is-changing");
+      void detail.offsetWidth;
+      detail.classList.add("is-changing");
+      detail.textContent = "";
+      const progress = document.createElement("div");
+      progress.className = "guide-progress";
+      progress.appendChild(createTextElement("span", "", "Шаг " + (activeIndex + 1) + " из " + items.length));
+      const dots = document.createElement("span");
+      dots.className = "guide-dots";
+      items.forEach(function (_, index) {
+        dots.appendChild(createTextElement("span", "guide-dot" + (index === activeIndex ? " active" : ""), ""));
+      });
+      progress.appendChild(dots);
+      detail.appendChild(progress);
+      detail.appendChild(createTextElement("h3", "", active.title));
+      detail.appendChild(createTextElement("p", "", active.detail));
+      const link = createTextElement("a", "button route", active.action + " →");
+      link.href = active.href;
+      detail.appendChild(link);
+    }
+
+    function initGuideBlocks() {
+      renderGuideBlock("teacher");
+      renderGuideBlock("student");
+    }
+
+    function renderModuleIllustrations() {
+      renderCatalog();
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      initTheme();
+      initMobileNav();
+      fillFilters();
+      renderCatalog();
+      renderRoute();
+      initGuideBlocks();
+      drawPlatformMap();
+      ["searchInput", "categoryFilter", "levelFilter"].forEach(function (id) {
+        document.getElementById(id).addEventListener("input", renderCatalog);
+        document.getElementById(id).addEventListener("change", renderCatalog);
+      });
+      document.getElementById("resetFilters").addEventListener("click", function () {
+        document.getElementById("searchInput").value = "";
+        document.getElementById("categoryFilter").value = "Все разделы";
+        document.getElementById("levelFilter").value = "Все уровни";
+        renderCatalog();
+      });
+      window.addEventListener("resize", function () { drawPlatformMap(); });
+      window.addEventListener("mirea-theme-change", function () {
+        drawPlatformMap();
+        renderModuleIllustrations();
+      });
+      window.addEventListener("mirea-theme-change", function () {
+        drawPlatformMap();
+        renderModuleIllustrations();
+      });
+      window.addEventListener("mirea-theme-change", function () {
+        drawPlatformMap();
+        renderModuleIllustrations();
+      });
+      window.addEventListener("mirea-theme-change", function () {
+        drawPlatformMap();
+        renderModuleIllustrations();
+      });
+      window.addEventListener("mirea-theme-change", function () {
+        drawPlatformMap();
+        renderModuleIllustrations();
+      });
+      window.addEventListener("mirea-theme-change", function () {
+        drawPlatformMap();
+        renderModuleIllustrations();
+      });
+      window.addEventListener("mirea-theme-change", function () { drawPlatformMap(); });
+      window.addEventListener("mirea-theme-change", function () { drawPlatformMap(); });
+    });
+
+                          </script>
+</body>
+</html>
